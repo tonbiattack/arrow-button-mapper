@@ -1,0 +1,10 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+
+# Local archives and logs
+*.zip
+*.log
+
+# Chrome extension packaging output
+*.crx

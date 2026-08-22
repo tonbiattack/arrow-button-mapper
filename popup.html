@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arrow Button Mapper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header class="brand-header">
+      <img class="brand-logo" src="icons/icon-48.png" width="48" height="48" alt="">
+      <div>
+        <h1>Arrow Button Mapper</h1>
+        <p class="lead">サイトごとに左右キーで押すボタンを登録します。</p>
+      </div>
+    </header>
+
+    <label class="switch-row" for="enabled">
+      <span>拡張機能を有効にする</span>
+      <input id="enabled" type="checkbox">
+    </label>
+
+    <section class="transfer-section" aria-labelledby="transferTitle">
+      <h2 id="transferTitle">設定の移行</h2>
+      <p class="field-help">登録済みの URL・CSS セレクタ・有効状態を JSON ファイルへ保存、または JSON ファイルから復元できます。インポートは現在の設定を置き換えます。</p>
+      <div class="transfer-actions">
+        <button id="exportButton" type="button" class="secondary">設定をエクスポート</button>
+        <label class="button-label secondary" for="importInput">設定をインポート</label>
+        <input id="importInput" type="file" accept="application/json,.json" hidden>
+      </div>
+      <p id="transferMessage" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="recording-section" aria-labelledby="recordingTitle">
+      <h2 id="recordingTitle">操作を記憶</h2>
+      <p class="field-help">記憶したいキーを選んだ後、ページ上で実際に押したいリンクまたはボタンを 1 回クリックしてください。URL 条件と対象要素を自動保存します。</p>
+      <div class="recording-actions">
+        <button id="recordLeftButton" type="button" class="secondary">← の操作を記憶</button>
+        <button id="recordRightButton" type="button" class="secondary">→ の操作を記憶</button>
+      </div>
+      <p id="recordMessage" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="form-section" aria-labelledby="formTitle">
+      <h2 id="formTitle">新しい操作ペア</h2>
+      <form id="mappingForm">
+        <input id="editingId" type="hidden">
+
+        <label for="urlPattern">URL パターン</label>
+        <input id="urlPattern" type="text" required spellcheck="false" placeholder="例: https://example.com/reader/">
+        <p class="field-help">入力した URL で始まるページに適用します。末尾の `*` は不要で、途中の `*` は任意の文字列に一致します。</p>
+
+        <label for="leftSelector">← キーで押す要素の CSS セレクタ</label>
+        <input id="leftSelector" type="text" spellcheck="false" placeholder="例: button.previous または #prev">
+
+        <label for="rightSelector">→ キーで押す要素の CSS セレクタ</label>
+        <input id="rightSelector" type="text" spellcheck="false" placeholder="例: button.next または #next">
+        <p class="field-help">少なくとも片方を入力してください。セレクタは対象ページ上の要素を一意に指定する記法です。</p>
+
+        <div class="form-actions">
+          <button id="saveButton" type="submit">操作ペアを保存</button>
+          <button id="cancelButton" type="button" class="secondary" hidden>編集をやめる</button>
+        </div>
+        <p id="formMessage" class="message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="mapping-section" aria-labelledby="listTitle">
+      <div class="section-heading">
+        <h2 id="listTitle">登録済みの操作ペア</h2>
+        <span id="mappingCount" class="count">0</span>
+      </div>
+      <div id="mappingList" class="mapping-list"></div>
+    </section>
+
+    <p class="hint">入力欄・選択欄・編集可能な領域にフォーカスがある間は、左右キーを奪いません。</p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
