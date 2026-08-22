@@ -3,6 +3,7 @@
 const fs = require("fs");
 const vm = require("vm");
 
+// content.js をブラウザなしで実行するための、入力欄判定に必要な最小限の Element モック。
 class ElementMock {
   constructor(tagName, attributes = {}) {
     this.tagName = tagName;
@@ -15,6 +16,7 @@ class ElementMock {
   }
 }
 
+// querySelector で返すクリック対象。クリック回数を記録して期待する要素だけが動くかを確認する。
 function createClickableElement({ disabled = false, ariaDisabled = false } = {}) {
   return {
     disabled,
@@ -28,6 +30,7 @@ function createClickableElement({ disabled = false, ariaDisabled = false } = {})
   };
 }
 
+// 親 URL 用と子 URL 用のボタンを分け、具体的な URL 条件の優先順位を検証する。
 const targets = {
   "#site-prev": createClickableElement(),
   "#site-next": createClickableElement(),
@@ -39,6 +42,7 @@ const targets = {
 const listeners = {};
 let storageChangeListener;
 
+// 初期設定と storage.onChanged による設定更新だけを再現する Chrome API モック。
 const chromeMock = {
   runtime: {
     lastError: null,
@@ -93,6 +97,7 @@ const context = {
   }
 };
 
+// 本物の content.js を実行し、登録された keydown リスナーを直接テストする。
 vm.runInNewContext(fs.readFileSync("content.js", "utf8"), context, { filename: "content.js" });
 
 function createKeyEvent(key, path = []) {
@@ -115,6 +120,7 @@ function assert(condition, message) {
 
 assert(typeof listeners.keydown === "function", "keydown のキャプチャリスナーが登録されていません。");
 
+// 子 URL の設定が、より広い親 URL の設定より優先される。
 const galleryRight = createKeyEvent("ArrowRight");
 listeners.keydown(galleryRight);
 assert(targets["#gallery-next"].clicks === 1, "子 URL 条件の → ボタンがクリックされていません。");
@@ -130,6 +136,7 @@ const siteRight = createKeyEvent("ArrowRight");
 listeners.keydown(siteRight);
 assert(targets["#site-next"].clicks === 1, "親 URL 条件がギャラリー外の URL に適用されていません。");
 
+// * を書かない URL 条件も前方一致となり、配下ページに適用される。
 storageChangeListener({
   mappings: {
     newValue: [{
@@ -144,6 +151,7 @@ const prefixOnly = createKeyEvent("ArrowRight");
 listeners.keydown(prefixOnly);
 assert(targets["#site-next"].clicks === 2, "末尾の * がない URL 条件で配下 URL に一致していません。");
 
+// テキスト入力と無効化済み要素では、通常のキー操作を奪わない。
 const input = new ElementMock("INPUT", { type: "text" });
 const inputEvent = createKeyEvent("ArrowRight", [input]);
 listeners.keydown(inputEvent);

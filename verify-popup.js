@@ -3,6 +3,7 @@
 const fs = require("fs");
 const vm = require("vm");
 
+// popup.js が利用するイベント・属性・子要素だけを持つ、軽量な DOM 要素モック。
 class MockElement {
   constructor(tagName = "div") {
     this.tagName = tagName.toUpperCase();
@@ -60,6 +61,7 @@ class MockElement {
   }
 }
 
+// エクスポート JSON の内容を検査できるよう、Blob の文字列データだけを保持する。
 class BlobMock {
   constructor(parts, options) {
     this.text = parts.join("");
@@ -67,6 +69,7 @@ class BlobMock {
   }
 }
 
+// ダウンロード、録画開始メッセージ、確認ダイアログをテスト中に記録する。
 const downloads = [];
 const recordingMessages = [];
 let exportedBlob;
@@ -87,6 +90,7 @@ const storage = {
   }]
 };
 
+// 現在タブへのメッセージ送信と設定の読書きを再現する Chrome API モック。
 const chromeMock = {
   runtime: { lastError: null },
   tabs: {
@@ -111,6 +115,7 @@ const chromeMock = {
   }
 };
 
+// VM 上で popup.js を評価するために、ブラウザ API をまとめて注入する。
 const context = {
   Blob: BlobMock,
   chrome: chromeMock,
@@ -149,12 +154,15 @@ function assert(condition, message) {
 }
 
 async function verify() {
+  // 本物の popup.js を読み込み、登録された UI 操作をモック経由で実行する。
   vm.runInNewContext(fs.readFileSync("popup.js", "utf8"), context, { filename: "popup.js" });
 
+  // エクスポートでは、バージョン付き JSON のダウンロードが開始される。
   assert(typeof elements["#exportButton"].listeners.click === "function", "エクスポート操作が登録されていません。");
   elements["#exportButton"].click();
   assert(downloads.length === 1 && downloads[0].download.endsWith(".json"), "JSON ダウンロードが開始されていません。");
 
+  // 録画開始では、左キー指定のメッセージが現在のタブへ送られる。
   elements["#recordLeftButton"].click();
   assert(recordingMessages.length === 1 && recordingMessages[0].tabId === 42, "録画開始メッセージが現在のタブへ送信されていません。");
   assert(recordingMessages[0].message.type === "startRecording" && recordingMessages[0].message.direction === "left", "左キー用の録画開始メッセージが不正です。");
@@ -178,6 +186,7 @@ async function verify() {
     }
   };
 
+  // インポートでは、置換確認後に有効状態と操作ペアがまとめて保存される。
   elements["#importInput"].files = [{
     size: JSON.stringify(importedPayload).length,
     text: async () => JSON.stringify(importedPayload)

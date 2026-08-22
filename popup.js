@@ -5,10 +5,12 @@
     enabled: true,
     mappings: []
   };
+  // 設定ファイルの互換性を判定する識別子と、読み込み可能な上限サイズ。
   const EXPORT_FORMAT = "arrow-button-mapper";
   const EXPORT_VERSION = 1;
   const MAX_IMPORT_BYTES = 1024 * 1024;
 
+  // 描画と編集の基準となる、現在読み込んだ操作ペアのローカル状態。
   const state = {
     mappings: []
   };
@@ -37,6 +39,7 @@
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
+  // ストレージやインポート JSON から取得した値を、安全に扱える操作ペアだけへ絞り込む。
   function normalizeMappings(value) {
     if (!Array.isArray(value)) return [];
 
@@ -80,6 +83,7 @@
     }
   }
 
+  // 保存失敗時の表示を一箇所に集約し、フォームとインポートの両方から再利用する。
   function saveSettings(partialSettings, onSaved, onError) {
     chrome.storage.sync.set(partialSettings, () => {
       if (chrome.runtime.lastError) {
@@ -184,6 +188,7 @@
     }
   }
 
+  // 対象のクリックはコンテンツスクリプトで捕捉する。ポップアップは開始要求だけを現在のタブへ送る。
   function startRecording(direction) {
     setRecordMessage("");
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -209,6 +214,7 @@
     });
   }
 
+  // 余分な UI 状態を含めず、移行に必要な設定だけをバージョン付きで書き出す。
   function createExportPayload() {
     return {
       format: EXPORT_FORMAT,
@@ -242,6 +248,7 @@
     setTransferMessage("設定ファイルをエクスポートしました。", "success");
   }
 
+  // 同じ ID を含むファイルでも、編集・削除が衝突しないよう読み込み時に重複を解消する。
   function createUniqueId(requestedId, usedIds) {
     let id = typeof requestedId === "string" && requestedId.trim() ? requestedId.trim() : createId();
     while (usedIds.has(id)) {
@@ -251,6 +258,7 @@
     return id;
   }
 
+  // 保存前に JSON の形式・URL・CSS セレクタをすべて検証し、不正な設定で既存データを壊さない。
   function parseImportedSettings(payload) {
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
       throw new Error("JSON の最上位は設定オブジェクトである必要があります。");
@@ -301,6 +309,7 @@
     };
   }
 
+  // インポートは操作ペア全体を置き換えるため、ファイルサイズ確認とユーザー確認を先に行う。
   async function importSettings(file) {
     if (!file) return;
 

@@ -3,6 +3,7 @@
 const fs = require("fs");
 const vm = require("vm");
 
+// ブラウザを起動せず、content.js を VM 上で評価するための最小限の DOM モック。
 class ElementMock {
   constructor(tagName, attributes = {}) {
     this.tagName = tagName.toUpperCase();
@@ -46,6 +47,7 @@ class ElementMock {
   }
 }
 
+// ページ番号が変わる「次のページ」リンクを含むページネーションをテスト用に再現する。
 const target = new ElementMock("a", { href: "/topics/claude?order=daily&page=4" });
 const nav = new ElementMock("nav");
 nav.append(target);
@@ -53,6 +55,7 @@ const listeners = {};
 let recordingMessageListener;
 const stored = { enabled: true, mappings: [] };
 
+// 設定の読書きとポップアップからの録画開始要求だけを再現する Chrome API モック。
 const chromeMock = {
   runtime: {
     lastError: null,
@@ -76,6 +79,7 @@ const chromeMock = {
   }
 };
 
+// 生成される selector が、対象リンクだけに一致するよう querySelectorAll を定義する。
 const documentMock = {
   documentElement: new ElementMock("html"),
   createElement(tagName) {
@@ -118,13 +122,16 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+// 本物の content.js を読み込み、登録されたメッセージ・クリックリスナーをテストする。
 vm.runInNewContext(fs.readFileSync("content.js", "utf8"), context, { filename: "content.js" });
 
+// 左キーの記憶開始を要求すると、ページ側にクリック監視が登録される。
 let response;
 recordingMessageListener({ type: "startRecording", direction: "left" }, {}, (value) => { response = value; });
 assert(response?.ok === true, "録画モードを開始できません。");
 assert(typeof listeners.click === "function", "録画用のクリックリスナーが登録されていません。");
 
+// 対象リンクをクリックしたイベントを渡し、遷移を止めて設定だけを保存できることを確認する。
 const clickEvent = {
   target,
   composedPath() { return [target]; },
@@ -134,6 +141,7 @@ const clickEvent = {
 listeners.click(clickEvent);
 
 assert(clickEvent.defaultPrevented && clickEvent.propagationStopped, "記憶対象クリックが遷移前に捕捉されていません。");
+// URL の query を除いた条件と、ページ番号に依存しない selector が保存されることが重要である。
 assert(stored.mappings.length === 1, "記憶した操作ペアが保存されていません。");
 assert(stored.mappings[0].urlPattern === "https://zenn.dev/topics/claude", "URL 条件が現在ページの origin と path から作られていません。");
 assert(stored.mappings[0].leftSelector === 'nav a[href^="/topics/claude?order=daily&page="]:last-child', "動的ページ番号に対応する CSS セレクタが保存されていません。");

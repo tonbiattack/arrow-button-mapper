@@ -24,7 +24,7 @@ CSS セレクタを手入力する代わりに、ページ上の対象を一度�
 3. **パッケージ化されていない拡張機能を読み込む** を選び、このリポジトリのフォルダー（`manifest.json` が直接入っているフォルダー）を指定します。
 4. 必要に応じて、Chrome の拡張機能メニューから Arrow Button Mapper をツールバーへ固定します。
 
-Chrome での展開済み拡張機能の読み込み方法は、公式ドキュメントも参照してください。[1]
+Chrome での展開済み拡張機能の読み込み方法は、[Chrome Extensions: Hello World](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world) も参照してください。
 
 ## 最短の使い方: 操作を記憶する
 
@@ -98,4 +98,4 @@ node verify-popup.js
 
 ## 参考資料
 
-[1]: https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world "Chrome Extensions: Hello World"
+- [Chrome Extensions: Hello World — Chrome for Developers](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world)

@@ -5,9 +5,12 @@
     enabled: true,
     mappings: []
   });
+  // 記憶モードで対象にできる、一般的なリンク・ボタン要素だけを候補にする。
   const RECORDABLE_SELECTOR = "a, button, input[type='button'], input[type='submit'], [role='button'], [role='link']";
 
+  // ストレージを毎回読むのではなく、ページごとにメモリ上の設定を保持する。
   let settings = { ...DEFAULT_SETTINGS };
+  // 録画中だけ方向と案内オーバーレイを保持する。null は通常のキー操作が有効な状態。
   let recorder = null;
 
   function createId() {
@@ -43,6 +46,7 @@
     });
   }
 
+  // ポップアップや他のタブからの変更を、再読み込みせずに現在のページへ反映する。
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== "sync") return;
 
@@ -88,6 +92,7 @@
     return candidate.wildcardCount < currentBest.wildcardCount;
   }
 
+  // 汎用 URL と子画面用 URL が両方一致するときは、より具体的な条件を選ぶ。
   function findBestMapping(url) {
     let bestMapping = null;
     let bestSpecificity = null;
@@ -105,6 +110,7 @@
     return bestMapping;
   }
 
+  // 文章編集やフォーム操作のカーソル移動は、拡張機能より常に優先する。
   function isEditableTarget(event) {
     const path = event.composedPath ? event.composedPath() : [event.target];
 
@@ -198,6 +204,7 @@
     return navigation.tagName.toLowerCase();
   }
 
+  // 安定した属性がない場合だけ、要素階層と同種要素の位置を使う最後の候補を作る。
   function buildStructuralSelector(element) {
     const segments = [];
     let node = element;
@@ -220,6 +227,7 @@
     return segments.join(" > ");
   }
 
+  // セレクタは、ID・意味のある属性・動的 href・完全 href・構造の順に安定性を優先する。
   function buildSelector(element) {
     const tag = element.tagName.toLowerCase();
     const candidates = [];
@@ -268,6 +276,7 @@
     return `${window.location.origin}${window.location.pathname}`;
   }
 
+  // ページの CSS と衝突しないよう、案内 UI は閉じた Shadow DOM に隔離する。
   function createOverlay(text) {
     const host = document.createElement("div");
     host.setAttribute("data-arrow-button-mapper-overlay", "");
@@ -294,6 +303,7 @@
     recorder = null;
   }
 
+  // 同じ URL 条件は 1 件に統合し、今回選んだ左右どちらかの値だけを更新する。
   function saveRecordedOperation(direction, selector) {
     const urlPattern = currentUrlPattern();
     const selectorKey = direction === "left" ? "leftSelector" : "rightSelector";
@@ -332,6 +342,7 @@
       return;
     }
 
+    // 記憶中のクリックで本来の遷移やボタン処理が走らないよう、保存前に止める。
     event.preventDefault();
     event.stopImmediatePropagation();
 
@@ -365,11 +376,13 @@
       direction,
       overlay: createOverlay(`${keyLabel} の操作を記憶中です。ページ上のリンクまたはボタンを 1 回クリックしてください。Esc で中止できます。`)
     };
+    // ページ側のクリック処理より先に捕捉するため、キャプチャ段階で一時的に監視する。
     window.addEventListener("click", handleRecordedClick, { capture: true, passive: false });
     window.addEventListener("keydown", handleRecordingKeydown, { capture: true, passive: false });
     return { ok: true };
   }
 
+  // ポップアップはクリック時に閉じるため、記憶後の保存処理はページ側で完結させる。
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type !== "startRecording") return;
     sendResponse(startRecording(message.direction));
