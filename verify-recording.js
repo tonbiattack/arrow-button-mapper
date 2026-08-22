@@ -146,4 +146,20 @@ assert(stored.mappings.length === 1, "記憶した操作ペアが保存されて
 assert(stored.mappings[0].urlPattern === "https://zenn.dev/topics/claude", "URL 条件が現在ページの origin と path から作られていません。");
 assert(stored.mappings[0].leftSelector === 'nav a[href^="/topics/claude?order=daily&page="]:last-child', "動的ページ番号に対応する CSS セレクタが保存されていません。");
 
-console.log("content.js のクリック記憶、URL 条件生成、動的ページネーションセレクタ保存を検証しました。");
+// 同じ対象を右キーとして記憶し直し、左キーの値を壊さず rightSelector だけを更新することを確認する。
+let rightResponse;
+recordingMessageListener({ type: "startRecording", direction: "right" }, {}, (value) => { rightResponse = value; });
+assert(rightResponse?.ok === true, "右キーの録画モードを開始できません。");
+const rightClickEvent = {
+  target,
+  composedPath() { return [target]; },
+  preventDefault() { this.defaultPrevented = true; },
+  stopImmediatePropagation() { this.propagationStopped = true; }
+};
+listeners.click(rightClickEvent);
+
+assert(rightClickEvent.defaultPrevented && rightClickEvent.propagationStopped, "右キーの記憶対象クリックが捕捉されていません。");
+assert(stored.mappings[0].leftSelector === 'nav a[href^="/topics/claude?order=daily&page="]:last-child', "右キーの記憶で左キーの設定が上書きされました。");
+assert(stored.mappings[0].rightSelector === 'nav a[href^="/topics/claude?order=daily&page="]:last-child', "右キーの記憶が rightSelector に保存されていません。");
+
+console.log("content.js の左右クリック記憶、URL 条件生成、動的ページネーションセレクタ保存を検証しました。");

@@ -132,6 +132,7 @@
     });
   }
 
+  // HTMLElement.click() は click イベントを起こすが、pointerdown・mousedown・座標を伴う操作までは再現しない。
   function clickSelector(selector) {
     if (!selector) return false;
 
@@ -192,6 +193,8 @@
     return "";
   }
 
+  // page / p / offset / cursor という既知のクエリ名だけを動的なページ番号として扱う。
+  // URL の変化規則を推測できないリンクは、後続の完全 href または構造セレクタへフォールバックする。
   function getDynamicHrefPrefix(href) {
     const match = href.match(/^(.*[?&](?:page|p|offset|cursor)=)[^&]+/i);
     return match ? match[1] : "";
@@ -303,6 +306,15 @@
     recorder = null;
   }
 
+  function showStorageSaveError() {
+    const detail = chrome.runtime.lastError?.message || "";
+    if (/quota|bytes|maximum write/i.test(detail)) {
+      showNotice("設定の保存容量を超えました。不要な操作ペアを削除するか、設定をエクスポートして整理してください。");
+      return;
+    }
+    showNotice("設定を保存できませんでした。もう一度お試しください。");
+  }
+
   // 同じ URL 条件は 1 件に統合し、今回選んだ左右どちらかの値だけを更新する。
   function saveRecordedOperation(direction, selector) {
     const urlPattern = currentUrlPattern();
@@ -310,7 +322,7 @@
 
     chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
       if (chrome.runtime.lastError) {
-        showNotice("設定を保存できませんでした。もう一度お試しください。");
+        showStorageSaveError();
         return;
       }
 
@@ -324,7 +336,7 @@
 
       chrome.storage.sync.set({ mappings }, () => {
         if (chrome.runtime.lastError) {
-          showNotice("設定を保存できませんでした。もう一度お試しください。");
+          showStorageSaveError();
           return;
         }
         const keyLabel = direction === "left" ? "←" : "→";
@@ -342,7 +354,8 @@
       return;
     }
 
-    // 記憶中のクリックで本来の遷移やボタン処理が走らないよう、保存前に止める。
+    // 既定のリンク遷移と、この時点より後のクリック処理を抑止する。
+    // ただし、このリスナーより先に実行済みのページ側処理の副作用は取り消せない。
     event.preventDefault();
     event.stopImmediatePropagation();
 
