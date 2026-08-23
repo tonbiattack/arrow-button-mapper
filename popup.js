@@ -212,6 +212,8 @@
 
         const keyLabel = direction === "left" ? "←" : "→";
         setRecordMessage(`${keyLabel} の操作を記憶中です。ページ上の対象を 1 回クリックしてください。`, "success");
+        // ポップアップが開いたままだとページをクリックできないため、記憶開始が成功したら閉じる。
+        window.close();
       });
     });
   }

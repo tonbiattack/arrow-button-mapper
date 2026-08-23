@@ -75,6 +75,7 @@ const recordingMessages = [];
 let exportedBlob;
 let confirmationCount = 0;
 let failNextSave = false;
+let popupCloseCount = 0;
 const selectors = [
   "#enabled", "#mappingForm", "#editingId", "#urlPattern", "#leftSelector", "#rightSelector",
   "#formTitle", "#saveButton", "#cancelButton", "#formMessage", "#mappingList", "#mappingCount",
@@ -150,6 +151,9 @@ const context = {
     confirm() {
       confirmationCount += 1;
       return true;
+    },
+    close() {
+      popupCloseCount += 1;
     }
   },
   setTimeout(callback) {
@@ -175,6 +179,7 @@ async function verify() {
   assert(recordingMessages.length === 1 && recordingMessages[0].tabId === 42, "録画開始メッセージが現在のタブへ送信されていません。");
   assert(recordingMessages[0].message.type === "startRecording" && recordingMessages[0].message.direction === "left", "左キー用の録画開始メッセージが不正です。");
   assert(elements["#recordMessage"].textContent.includes("記憶中"), "録画開始状態が表示されていません。");
+  assert(popupCloseCount === 1, "録画開始後にポップアップが閉じられていません。");
 
   const exported = JSON.parse(exportedBlob.text);
   assert(exported.format === "arrow-button-mapper" && exported.version === 1, "エクスポート形式が不正です。");
@@ -227,7 +232,7 @@ async function verify() {
   assert(storage.enabled === false, "有効・無効の保存失敗時に保存済み設定が変更されました。");
   assert(elements["#enabled"].checked === false, "有効・無効の保存失敗時に画面表示が元へ戻りません。");
 
-  console.log("popup.js の録画開始、JSON エクスポート、検証付きインポート、保存失敗時の状態維持を確認しました。");
+  console.log("popup.js の録画開始後のポップアップ終了、JSON エクスポート、検証付きインポート、保存失敗時の状態維持を確認しました。");
 }
 
 verify().catch((error) => {
