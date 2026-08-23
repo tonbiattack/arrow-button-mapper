@@ -12,6 +12,7 @@
 
   // 描画と編集の基準となる、現在読み込んだ操作ペアのローカル状態。
   const state = {
+    enabled: true,
     mappings: []
   };
 
@@ -100,8 +101,9 @@
     });
   }
 
-  function saveMappings(message) {
-    saveSettings({ mappings: state.mappings }, () => {
+  function saveMappings(mappings, message) {
+    saveSettings({ mappings }, () => {
+      state.mappings = mappings;
       renderMappingList();
       resetForm();
       setMessage(message, "success");
@@ -221,7 +223,7 @@
       version: EXPORT_VERSION,
       exportedAt: new Date().toISOString(),
       settings: {
-        enabled: enabled.checked,
+        enabled: state.enabled,
         mappings: state.mappings.map((mapping) => ({
           id: mapping.id,
           urlPattern: mapping.urlPattern,
@@ -326,6 +328,7 @@
       }
 
       saveSettings(imported, () => {
+        state.enabled = imported.enabled;
         enabled.checked = imported.enabled;
         state.mappings = imported.mappings;
         renderMappingList();
@@ -342,7 +345,13 @@
   }
 
   enabled.addEventListener("change", () => {
-    saveSettings({ enabled: enabled.checked });
+    const nextEnabled = enabled.checked;
+    saveSettings({ enabled: nextEnabled }, () => {
+      state.enabled = nextEnabled;
+    }, () => {
+      enabled.checked = state.enabled;
+      setMessage("設定を保存できませんでした。もう一度お試しください。", "error");
+    });
   });
 
   mappingForm.addEventListener("submit", (event) => {
@@ -372,12 +381,12 @@
     const nextMapping = { id, urlPattern: pattern, leftSelector: left, rightSelector: right };
     const index = state.mappings.findIndex((mapping) => mapping.id === id);
 
+    const mappings = [...state.mappings];
     if (index >= 0) {
-      state.mappings[index] = nextMapping;
-      saveMappings("操作ペアを更新しました。");
+      mappings[index] = nextMapping;
+      saveMappings(mappings, "操作ペアを更新しました。");
     } else {
-      state.mappings.push(nextMapping);
-      saveMappings("操作ペアを保存しました。");
+      saveMappings([...mappings, nextMapping], "操作ペアを保存しました。");
     }
   });
 
@@ -400,8 +409,7 @@
       const mapping = state.mappings.find((item) => item.id === id);
       if (!mapping || !window.confirm(`「${mapping.urlPattern}」の操作ペアを削除しますか？`)) return;
 
-      state.mappings = state.mappings.filter((item) => item.id !== id);
-      saveMappings("操作ペアを削除しました。");
+      saveMappings(state.mappings.filter((item) => item.id !== id), "操作ペアを削除しました。");
     }
   });
 
@@ -417,7 +425,8 @@
       return;
     }
 
-    enabled.checked = Boolean(settings.enabled);
+    state.enabled = Boolean(settings.enabled);
+    enabled.checked = state.enabled;
     state.mappings = normalizeMappings(settings.mappings);
     renderMappingList();
   });

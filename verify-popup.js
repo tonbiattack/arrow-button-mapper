@@ -74,6 +74,7 @@ const downloads = [];
 const recordingMessages = [];
 let exportedBlob;
 let confirmationCount = 0;
+let failNextSave = false;
 const selectors = [
   "#enabled", "#mappingForm", "#editingId", "#urlPattern", "#leftSelector", "#rightSelector",
   "#formTitle", "#saveButton", "#cancelButton", "#formMessage", "#mappingList", "#mappingCount",
@@ -108,6 +109,13 @@ const chromeMock = {
         callback({ ...defaults, ...storage });
       },
       set(partial, callback) {
+        if (failNextSave) {
+          failNextSave = false;
+          chromeMock.runtime.lastError = { message: "QUOTA_BYTES_PER_ITEM quota exceeded" };
+          callback();
+          chromeMock.runtime.lastError = null;
+          return;
+        }
         Object.assign(storage, partial);
         callback();
       }
@@ -200,7 +208,26 @@ async function verify() {
   assert(storage.mappings.length === 1 && storage.mappings[0].id === "gallery", "インポート時に操作ペアが置き換わっていません。");
   assert(elements["#mappingCount"].textContent === "1", "インポート後の操作ペア表示が更新されていません。");
 
-  console.log("popup.js の録画開始、JSON エクスポート、検証付きインポート、設定置換を確認しました。");
+  // 保存に失敗しても、画面上の状態だけが先に更新されると、次の保存やエクスポートで未保存データを扱ってしまう。
+  elements["#urlPattern"].value = "https://example.com/new";
+  elements["#leftSelector"].value = "#new-left";
+  elements["#rightSelector"].value = "";
+  failNextSave = true;
+  elements["#mappingForm"].dispatch("submit");
+
+  assert(storage.mappings.length === 1 && storage.mappings[0].id === "gallery", "保存失敗時に保存済み設定が変更されました。");
+  assert(elements["#mappingCount"].textContent === "1", "保存失敗時に操作ペア一覧が更新されました。");
+  elements["#exportButton"].click();
+  assert(JSON.parse(exportedBlob.text).settings.mappings[0].id === "gallery", "保存失敗時に未保存の操作ペアがエクスポートされました。");
+
+  // 有効・無効の切り替えも保存できなければ、表示を保存済みの状態へ戻す。
+  elements["#enabled"].checked = true;
+  failNextSave = true;
+  elements["#enabled"].dispatch("change");
+  assert(storage.enabled === false, "有効・無効の保存失敗時に保存済み設定が変更されました。");
+  assert(elements["#enabled"].checked === false, "有効・無効の保存失敗時に画面表示が元へ戻りません。");
+
+  console.log("popup.js の録画開始、JSON エクスポート、検証付きインポート、保存失敗時の状態維持を確認しました。");
 }
 
 verify().catch((error) => {
