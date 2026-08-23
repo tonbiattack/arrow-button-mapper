@@ -180,6 +180,7 @@
   function isUniqueSelector(selector, expectedElement) {
     try {
       const matches = document.querySelectorAll(selector);
+      // CSS として有効なだけでは不十分で、別の「次へ」を誤操作しないため対象 1 件だけに絞る。
       return matches.length === 1 && matches[0] === expectedElement;
     } catch {
       return false;
@@ -326,6 +327,7 @@
         return;
       }
 
+      // タブ内キャッシュではなく保存済みの最新値を基準にし、左右の片側だけを更新する。
       const mappings = normalizeMappings(stored.mappings);
       let mapping = mappings.find((item) => item.urlPattern === urlPattern);
       if (!mapping) {
@@ -395,7 +397,7 @@
     return { ok: true };
   }
 
-  // ポップアップはクリック時に閉じるため、記憶後の保存処理はページ側で完結させる。
+  // 録画開始後にポップアップは閉じるため、対象クリック以降の処理はページ側で完結させる。
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type !== "startRecording") return;
     sendResponse(startRecording(message.direction));
