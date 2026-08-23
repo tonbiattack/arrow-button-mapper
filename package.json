@@ -1,0 +1,7 @@
+{
+  "name": "arrow-button-mapper",
+  "private": true,
+  "scripts": {
+    "test": "node --check content.js && node --check popup.js && node verify-content.js && node verify-recording.js && node verify-popup.js"
+  }
+}
