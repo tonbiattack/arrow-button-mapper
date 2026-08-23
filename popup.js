@@ -103,6 +103,7 @@
 
   function saveMappings(mappings, message) {
     saveSettings({ mappings }, () => {
+      // 保存成功前に state を変えると、失敗時の画面表示やエクスポートだけが未保存の値になる。
       state.mappings = mappings;
       renderMappingList();
       resetForm();
@@ -212,7 +213,7 @@
 
         const keyLabel = direction === "left" ? "←" : "→";
         setRecordMessage(`${keyLabel} の操作を記憶中です。ページ上の対象を 1 回クリックしてください。`, "success");
-        // ポップアップが開いたままだとページをクリックできないため、記憶開始が成功したら閉じる。
+        // ページ側が監視を開始できたことを確認してから閉じる。失敗時はポップアップを残して理由を表示する。
         window.close();
       });
     });
