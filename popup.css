@@ -131,6 +131,8 @@ input[type="text"]:focus {
 .transfer-actions,
 .recording-actions { margin-top: 12px; }
 
+.transfer-actions .button-label { margin: 0; }
+
 button {
   cursor: pointer;
   padding: 8px 11px;
