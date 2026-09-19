@@ -43,6 +43,6 @@ Chrome Web Store のデータ利用に関する選択肢は、実際の実装と
 |---|---|---|
 |ストア アイコン|`assets/store-icon-128.png`|128 × 128|
 |小さいプロモーション タイル|`assets/promo-tile-440x280.png`|440 × 280|
-|スクリーンショット|最新バージョンを実機で撮影した PNG|640 × 400 または 1280 × 800|
+|スクリーンショット|`assets/screenshots/1.png`、`2.png`、`3.png`|各 1280 × 800・24 ビット PNG|
 
-スクリーンショットは、最新版の拡張機能を Chrome で開いた状態を撮影し、`assets/screenshots/` に保存してからアップロードします。撮影方法は [screenshots.md](screenshots.md) を参照してください。
+スクリーンショットは、最新版の拡張機能を Chrome で開いた状態を撮影し、`assets/screenshots/` に保存してからアップロードします。現在の 3 枚はアップロード可能な規格へ整形済みです。内容と撮影方法は [screenshots.md](screenshots.md) を参照してください。
