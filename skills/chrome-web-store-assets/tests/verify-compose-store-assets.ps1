@@ -92,6 +92,23 @@ try {
         throw 'The composition script must reject an icon source that is not 128x128.'
     }
 
+    $jpegIconPath = Join-Path $inputRoot 'icon.jpg'
+    $jpegIcon = [System.Drawing.Bitmap]::new(128, 128, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+    $jpegIcon.Save($jpegIconPath, [System.Drawing.Imaging.ImageFormat]::Jpeg)
+    $jpegIcon.Dispose()
+
+    $rejected = $false
+    try {
+        & $scriptPath -IconSource $jpegIconPath -ScreenshotSources $screenshotPaths -OutputRoot (Join-Path $temporaryRoot 'jpeg-icon-output')
+    }
+    catch {
+        $rejected = $true
+    }
+
+    if (-not $rejected) {
+        throw 'The composition script must reject a non-PNG icon source.'
+    }
+
     Write-Output 'Chrome Web Store asset composition verification passed.'
 }
 finally {

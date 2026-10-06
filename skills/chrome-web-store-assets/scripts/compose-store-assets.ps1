@@ -56,7 +56,13 @@ function Open-Bitmap {
         throw "Image source was not found: $Path"
     }
 
-    return [System.Drawing.Bitmap]::new((Resolve-Path -LiteralPath $Path).Path)
+    $bitmap = [System.Drawing.Bitmap]::new((Resolve-Path -LiteralPath $Path).Path)
+    if ($bitmap.RawFormat.Guid -ne [System.Drawing.Imaging.ImageFormat]::Png.Guid) {
+        $bitmap.Dispose()
+        throw "Image source must be a PNG: $Path"
+    }
+
+    return $bitmap
 }
 
 if ($ScreenshotSources.Count -ne 3) {
