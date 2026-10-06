@@ -203,4 +203,3 @@ for ($index = 0; $index -lt $ScreenshotSources.Count; $index++) {
 }
 
 Write-Output "Created $iconOutput and three screenshots under $screenshotsOutput."
-
