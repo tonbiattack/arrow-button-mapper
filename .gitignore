@@ -8,3 +8,6 @@ Thumbs.db
 
 # Chrome extension packaging output
 *.crx
+
+# Local Git worktrees
+.worktrees/
