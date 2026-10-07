@@ -1,48 +1,23 @@
-# Chrome Web Store 掲載情報
+# Chrome Web Store Developer Dashboard 入力一覧
 
-この文書の内容を Chrome Web Store Developer Dashboard の「ストアの掲載情報」へ入力します。
+Chrome Web Store Developer Dashboard の入力欄ごとに、貼り付ける文面と選択・確認事項を分けて管理する。公開前には、`manifest.json`、実際の拡張機能、[プライバシーポリシー](privacy-policy.md) のすべてと内容が一致することを確認する。
 
-## 基本情報
+## テキスト入力欄
 
-|項目|入力値|
-|---|---|
-|カテゴリ|生産性|
-|言語|日本語|
-|問い合わせ先|teni213638395636@gmail.com|
-|サポート URL|https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/support.md|
-|プライバシー ポリシー URL|https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/privacy-policy.md|
+| Dashboard の入力欄 | ファイル | 備考 |
+| --- | --- | --- |
+| Item summary | [item-summary.txt](dashboard/item-summary.txt) | 132文字以内のプレーンテキスト |
+| Detailed description | [detailed-description.md](dashboard/detailed-description.md) | Store 掲載ページの本文 |
+| Single purpose description | [single-purpose.md](dashboard/single-purpose.md) | Privacy practices の審査向け説明 |
+| Permissions justification | [permission-justifications.md](dashboard/permission-justifications.md) | manifest に表示された権限ごとに貼り付ける |
+| Remote code | [remote-code.md](dashboard/remote-code.md) | Privacy practices の回答 |
+| Support / URLs | [contact-and-urls.md](dashboard/contact-and-urls.md) | URL・問い合わせ先の入力欄 |
 
-## 説明
+## 選択・アップロード項目
 
-Arrow Button Mapper は、Web ページ上の「前へ」「次へ」などのリンクやボタンを、キーボードの ← / → キーで操作できる Chrome 拡張機能です。
+| Dashboard の項目 | ファイル | 確認内容 |
+| --- | --- | --- |
+| Data usage / Limited Use | [data-usage-checklist.md](dashboard/data-usage-checklist.md) | 選択式の設問に回答する根拠 |
+| Category / language / image assets | [listing-settings.md](dashboard/listing-settings.md) | 生産性、日本語、画像ファイル |
 
-サイトごとに URL と対象要素を登録できます。ポップアップから ← または → を選び、ページ上で操作したいリンク・ボタンを 1 回クリックするだけで設定を記憶します。CSS セレクタを直接入力して細かく調整することもできます。
-
-主な機能:
-
-- ページ上のリンク・ボタンをクリックして、左右キーの操作として記憶
-- URL ごとに左右それぞれの操作対象を登録
-- より具体的な URL 条件を優先して適用
-- URL パターンと CSS セレクタの手動編集
-- 設定の JSON エクスポートとインポート
-- 入力欄や編集可能な領域では、通常の左右キー操作を妨げない設計
-
-設定内容は Chrome の同期ストレージに保存されます。開発者のサーバーへ閲覧履歴、ページ内容、設定内容を送信することはありません。
-
-## プライバシー画面の入力指針
-
-単一の目的は「ユーザーが指定した Web ページ上のリンクまたはボタンを、左右矢印キーで操作できるようにすること」です。
-
-この拡張機能は、ユーザーが操作を記憶するときだけ、現在の URL と選択した要素を設定として保存します。設定は Chrome の同期ストレージに保存され、開発者のサーバーや第三者へ送信されません。広告、分析、販売目的のデータ利用はありません。
-
-Chrome Web Store のデータ利用に関する選択肢は、実際の実装とこの説明に一致するものを選択してください。ページ URL を設定として扱うため、該当する場合はウェブ閲覧アクティビティに関する開示を行い、用途を上記の単一目的に限定してください。
-
-## アップロードする画像
-
-|用途|ファイル|サイズ|
-|---|---|---|
-|ストア アイコン|`assets/store-icon-128.png`|128 × 128|
-|小さいプロモーション タイル|`assets/promo-tile-440x280.png`|440 × 280|
-|スクリーンショット|`assets/screenshots/1.png`、`2.png`、`3.png`|各 1280 × 800・24 ビット PNG|
-
-スクリーンショットは、最新版の拡張機能を Chrome で開いた状態を撮影し、`assets/screenshots/` に保存してからアップロードします。現在の 3 枚はアップロード可能な規格へ整形済みです。内容と撮影方法は [screenshots.md](screenshots.md) を参照してください。
+スクリーンショットの内容とアップロード手順は [screenshots.md](screenshots.md) を参照する。ページ URL、CSS セレクタ、同期ストレージの利用はプライバシーポリシーにも記載している。
