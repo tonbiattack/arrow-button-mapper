@@ -12,6 +12,7 @@
   let settings = { ...DEFAULT_SETTINGS };
   // 録画中だけ方向と案内オーバーレイを保持する。null は通常のキー操作が有効な状態。
   let recorder = null;
+  let contextTarget = null;
 
   function createId() {
     if (crypto.randomUUID) return crypto.randomUUID();
@@ -270,6 +271,7 @@
   }
 
   function getRecordableTarget(event) {
+    if (isEditableTarget(event)) return null;
     const path = event.composedPath ? event.composedPath() : [event.target];
     const originalTarget = path.find((node) => node instanceof Element) || event.target;
     if (!(originalTarget instanceof Element)) return null;
@@ -303,6 +305,8 @@
     if (!recorder) return;
     window.removeEventListener("click", handleRecordedClick, true);
     window.removeEventListener("keydown", handleRecordingKeydown, true);
+    window.removeEventListener("mouseover", handleRecordingHover, true);
+    clearHighlight();
     recorder.overlay.remove();
     recorder = null;
   }
@@ -317,13 +321,13 @@
   }
 
   // 同じ URL 条件は 1 件に統合し、今回選んだ左右どちらかの値だけを更新する。
-  function saveRecordedOperation(direction, selector) {
-    const urlPattern = currentUrlPattern();
-    const selectorKey = direction === "left" ? "leftSelector" : "rightSelector";
+  function saveRecordedOperation(direction, selector, done, urlPattern = currentUrlPattern()) {
+    const updates = typeof direction === "object" ? direction : { [direction === "left" ? "leftSelector" : "rightSelector"]: selector };
 
     chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
       if (chrome.runtime.lastError) {
         showStorageSaveError();
+        done?.(false);
         return;
       }
 
@@ -334,25 +338,35 @@
         mapping = { id: createId(), urlPattern, leftSelector: "", rightSelector: "" };
         mappings.push(mapping);
       }
-      mapping[selectorKey] = selector;
+      Object.assign(mapping, updates);
 
       chrome.storage.sync.set({ mappings }, () => {
         if (chrome.runtime.lastError) {
           showStorageSaveError();
+          done?.(false);
           return;
         }
-        const keyLabel = direction === "left" ? "←" : "→";
-        showNotice(`${keyLabel} の操作を記憶しました。必要に応じてポップアップから編集できます。`);
+        const keyLabel = typeof direction === "object" ? "選択した操作" : direction === "left" ? "←" : "→";
+        showNotice(`${keyLabel} に登録しました。必要に応じてポップアップから編集できます。`);
+        done?.(true);
       });
     });
   }
 
   function handleRecordedClick(event) {
     if (!recorder) return;
+    if (event.composedPath?.().includes(recorder.overlay)) return;
+    if (recorder.saving || recorder.step === "confirm") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
     const target = getRecordableTarget(event);
     if (!target) {
-      recorder.overlay.remove();
-      recorder.overlay = createOverlay("リンクまたはボタンをクリックしてください。Esc で中止できます。");
+      if (recorder.direction !== "both") {
+        recorder.overlay.remove();
+        recorder.overlay = createOverlay("リンクまたはボタンをクリックしてください。Esc で中止できます。");
+      }
       return;
     }
 
@@ -363,13 +377,86 @@
 
     const { direction } = recorder;
     const selector = buildSelector(target);
-    stopRecording();
 
     if (!selector) {
       showNotice("対象要素を特定できませんでした。手入力で設定してください。");
       return;
     }
+    if (direction === "both") {
+      recorder.selections[recorder.step === "left" ? "leftSelector" : "rightSelector"] = selector;
+      advanceRecording();
+      return;
+    }
+    stopRecording();
     saveRecordedOperation(direction, selector);
+  }
+
+  function clearHighlight() {
+    if (!recorder?.highlight) return;
+    recorder.highlight.style.outline = recorder.oldOutline;
+    recorder.highlight = null;
+  }
+
+  function handleRecordingHover(event) {
+    if (!recorder || recorder.direction !== "both" || recorder.step === "confirm") return;
+    const target = getRecordableTarget(event);
+    if (target === recorder.highlight) return;
+    clearHighlight();
+    if (target) {
+      recorder.highlight = target;
+      recorder.oldOutline = target.style.outline;
+      target.style.outline = "3px solid #3284ff";
+    }
+  }
+
+  function renderBatchGuide(message) {
+    recorder.overlay?.remove();
+    const overlay = document.createElement("div");
+    overlay.setAttribute("data-arrow-button-mapper-overlay", "");
+    overlay.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:2147483647;";
+    const shadow = overlay.attachShadow({ mode: "closed" });
+    const panel = document.createElement("div");
+    panel.style.cssText = "max-width:360px;padding:14px;border-radius:10px;background:#10233f;color:white;font:14px/1.5 system-ui;box-shadow:0 10px 30px #0005";
+    const text = document.createElement("p");
+    text.textContent = message || (recorder.step === "left" ? "① 戻るボタンをクリック → ② 進むボタンをクリック" : recorder.step === "right" ? "① 完了 → ② 進むボタンをクリック" : `確認: ← ${recorder.selections.leftSelector || "スキップ"} / → ${recorder.selections.rightSelector || "スキップ"}`);
+    panel.append(text);
+    const addButton = (label, action) => {
+      const button = document.createElement("button");
+      button.textContent = label;
+      button.type = "button";
+      button.style.cssText = "margin:4px;padding:6px;cursor:pointer";
+      button.addEventListener("click", action);
+      panel.append(button);
+    };
+    if (recorder.step !== "confirm") addButton("スキップ", advanceRecording);
+    if (recorder.step === "confirm") addButton("保存", saveBatch);
+    addButton("やり直し", () => { recorder.selections = {}; recorder.step = "left"; renderBatchGuide(); });
+    addButton("キャンセル", () => { stopRecording(); showNotice("操作の記憶を中止しました。"); });
+    shadow.append(panel);
+    document.documentElement.append(overlay);
+    recorder.overlay = overlay;
+  }
+
+  function advanceRecording() {
+    clearHighlight();
+    recorder.step = recorder.step === "left" ? "right" : "confirm";
+    renderBatchGuide();
+    if (recorder.step === "confirm" && recorder.selections.leftSelector && recorder.selections.rightSelector) saveBatch();
+  }
+
+  function saveBatch() {
+    if (!Object.keys(recorder.selections).length) {
+      renderBatchGuide("少なくとも一方を選択してください。やり直し、またはキャンセルできます。");
+      return;
+    }
+    const active = recorder;
+    active.saving = true;
+    saveRecordedOperation(active.selections, null, (ok) => {
+      if (recorder !== active) return;
+      active.saving = false;
+      if (ok) stopRecording();
+      else renderBatchGuide("保存に失敗しました。選択内容を確認して再試行してください。");
+    }, active.urlPattern);
   }
 
   function handleRecordingKeydown(event) {
@@ -381,7 +468,7 @@
   }
 
   function startRecording(direction) {
-    if (direction !== "left" && direction !== "right") {
+    if (direction !== "left" && direction !== "right" && direction !== "both") {
       return { ok: false, message: "記憶するキーが正しくありません。" };
     }
 
@@ -389,8 +476,13 @@
     const keyLabel = direction === "left" ? "←" : "→";
     recorder = {
       direction,
+      step: "left", selections: {}, urlPattern: currentUrlPattern(),
       overlay: createOverlay(`${keyLabel} の操作を記憶中です。ページ上のリンクまたはボタンを 1 回クリックしてください。Esc で中止できます。`)
     };
+    if (direction === "both") {
+      renderBatchGuide();
+      window.addEventListener("mouseover", handleRecordingHover, true);
+    }
     // ページ側のクリック処理より先に捕捉するため、キャプチャ段階で一時的に監視する。
     window.addEventListener("click", handleRecordedClick, { capture: true, passive: false });
     window.addEventListener("keydown", handleRecordingKeydown, { capture: true, passive: false });
@@ -399,9 +491,30 @@
 
   // 録画開始後にポップアップは閉じるため、対象クリック以降の処理はページ側で完結させる。
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message?.type !== "startRecording") return;
-    sendResponse(startRecording(message.direction));
+    if (message?.type === "startRecording") sendResponse(startRecording(message.direction));
+    if (message?.type === "registerContextTarget") {
+      const candidate = contextTarget;
+      contextTarget = null;
+      if (!candidate || Date.now() - candidate.time > 30000 || candidate.url !== window.location.href || !candidate.element.isConnected || !["left", "right"].includes(message.direction)) {
+        showNotice("右クリックした対象を特定できませんでした。もう一度お試しください。");
+        sendResponse({ ok: false });
+        return;
+      }
+      const selector = buildSelector(candidate.element);
+      if (!selector || !isUniqueSelector(selector, candidate.element)) {
+        showNotice("右クリックした対象を特定できませんでした。");
+        sendResponse({ ok: false });
+        return;
+      }
+      saveRecordedOperation(message.direction, selector);
+      sendResponse({ ok: true });
+    }
   });
+
+  window.addEventListener("contextmenu", (event) => {
+    const element = getRecordableTarget(event);
+    contextTarget = element ? { element, time: Date.now(), url: window.location.href } : null;
+  }, true);
 
   // document_start かつキャプチャ段階で登録し、ページ側の後続キー処理より先に評価する。
   window.addEventListener("keydown", handleKeydown, { capture: true, passive: false });
