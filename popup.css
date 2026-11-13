@@ -128,8 +128,26 @@ input[type="text"]:focus {
 
 .form-actions { margin-top: 16px; }
 
-.transfer-actions,
-.recording-actions { margin-top: 12px; }
+.transfer-actions { margin-top: 12px; }
+
+.recording-section .field-help { line-height: 1.6; }
+
+.recording-primary {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 11px;
+}
+
+.recording-alternative {
+  margin: 16px 0 8px;
+  color: #60718b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.recording-actions { gap: 8px; }
+.recording-actions button { flex: 1 1 140px; }
+.recording-section .message:empty { display: none; }
 
 .transfer-actions .button-label { margin: 0; }
 
@@ -261,7 +279,7 @@ code {
 
 @media (prefers-color-scheme: dark) {
   body { background: #111827; color: #e5edf9; }
-  .lead, .field-help, .empty-state, .hint, .mapping-selector { color: #aebed4; }
+  .lead, .field-help, .empty-state, .hint, .mapping-selector, .recording-alternative { color: #aebed4; }
   input[type="text"], .switch-row, .transfer-section, .recording-section, .form-section, .mapping-section { border-color: #34445d; background: #182235; }
   input[type="text"] { color: #e5edf9; }
   button.secondary, button.danger { background: #182235; }
