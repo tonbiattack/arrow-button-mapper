@@ -33,6 +33,7 @@
   const transferMessage = document.querySelector("#transferMessage");
   const recordLeftButton = document.querySelector("#recordLeftButton");
   const recordRightButton = document.querySelector("#recordRightButton");
+  const recordBothButton = document.querySelector("#recordBothButton");
   const recordMessage = document.querySelector("#recordMessage");
 
   function createId() {
@@ -420,6 +421,7 @@
   importInput.addEventListener("change", () => importSettings(importInput.files[0]));
   recordLeftButton.addEventListener("click", () => startRecording("left"));
   recordRightButton.addEventListener("click", () => startRecording("right"));
+  recordBothButton.addEventListener("click", () => startRecording("both"));
 
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
     if (chrome.runtime.lastError) {
