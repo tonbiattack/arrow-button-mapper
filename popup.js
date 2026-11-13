@@ -33,6 +33,8 @@
   const transferMessage = document.querySelector("#transferMessage");
   const recordLeftButton = document.querySelector("#recordLeftButton");
   const recordRightButton = document.querySelector("#recordRightButton");
+  const recordBothButton = document.querySelector("#recordBothButton");
+  const detectButton = document.querySelector("#detectButton");
   const recordMessage = document.querySelector("#recordMessage");
 
   function createId() {
@@ -420,6 +422,23 @@
   importInput.addEventListener("change", () => importSettings(importInput.files[0]));
   recordLeftButton.addEventListener("click", () => startRecording("left"));
   recordRightButton.addEventListener("click", () => startRecording("right"));
+  recordBothButton.addEventListener("click", () => startRecording("both"));
+  detectButton.addEventListener("click", () => {
+    setRecordMessage("");
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (chrome.runtime.lastError || !tabs?.[0]?.id) {
+        setRecordMessage("現在のページを取得できませんでした。", "error");
+        return;
+      }
+      chrome.tabs.sendMessage(tabs[0].id, { type: "detectNavigation" }, (response) => {
+        if (chrome.runtime.lastError || !response?.ok) {
+          setRecordMessage("このページでは自動検出できません。対象ページを再読み込みしてからお試しください。", "error");
+          return;
+        }
+        window.close();
+      });
+    });
+  });
 
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
     if (chrome.runtime.lastError) {
