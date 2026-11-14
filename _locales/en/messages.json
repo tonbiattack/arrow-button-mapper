@@ -1,0 +1,245 @@
+{
+  "extensionDescription": {
+    "message": "Click elements with the left and right arrow keys using site-specific CSS selectors."
+  },
+  "contextLeft": {
+    "message": "Assign to Back (←)"
+  },
+  "contextRight": {
+    "message": "Assign to Next (→)"
+  },
+  "text1": {
+    "message": "Assign page buttons to the left and right arrow keys."
+  },
+  "text2": {
+    "message": "Enable extension"
+  },
+  "text3": {
+    "message": "Transfer settings"
+  },
+  "text4": {
+    "message": "Export your settings to a JSON file or restore them from a file. Importing replaces your current settings."
+  },
+  "text5": {
+    "message": "Export settings"
+  },
+  "text6": {
+    "message": "Import settings"
+  },
+  "text7": {
+    "message": "Record actions"
+  },
+  "text8": {
+    "message": "Choose a recording method, then click a link or button on the page to save its URL pattern and selector."
+  },
+  "text9": {
+    "message": "Record Back and Next"
+  },
+  "text10": {
+    "message": "Or record one direction"
+  },
+  "text11": {
+    "message": "Record ← action"
+  },
+  "text12": {
+    "message": "Record → action"
+  },
+  "text13": {
+    "message": "New action pair"
+  },
+  "text14": {
+    "message": "URL pattern"
+  },
+  "text15": {
+    "message": "Applies to pages starting with this URL. A trailing * is unnecessary; * elsewhere matches any text."
+  },
+  "text16": {
+    "message": "CSS selector for the ← key"
+  },
+  "text17": {
+    "message": "CSS selector for the → key"
+  },
+  "text18": {
+    "message": "Enter at least one selector. A selector must uniquely identify an element on the target page."
+  },
+  "text19": {
+    "message": "Save action pair"
+  },
+  "text20": {
+    "message": "Cancel editing"
+  },
+  "text21": {
+    "message": "Saved action pairs"
+  },
+  "text22": {
+    "message": "Arrow keys work normally in input fields and editable areas."
+  },
+  "text23": {
+    "message": "Example: https://example.com/reader/"
+  },
+  "text24": {
+    "message": "Example: button.previous or #prev"
+  },
+  "text25": {
+    "message": "Example: button.next or #next"
+  },
+  "text26": {
+    "message": "Could not save settings. Please try again."
+  },
+  "text27": {
+    "message": "Edit action pair"
+  },
+  "text28": {
+    "message": "Save changes"
+  },
+  "text29": {
+    "message": "Not set"
+  },
+  "text30": {
+    "message": "No saved action pairs."
+  },
+  "text31": {
+    "message": "Edit"
+  },
+  "text32": {
+    "message": "Delete"
+  },
+  "text33": {
+    "message": "Could not access the current tab."
+  },
+  "text34": {
+    "message": "Recording is unavailable on this page. Reload the page and try again."
+  },
+  "text35": {
+    "message": "Could not start recording."
+  },
+  "text36": {
+    "message": "Recording $1. Click the target on the page once."
+  },
+  "text37": {
+    "message": "Settings exported."
+  },
+  "text38": {
+    "message": "The JSON root must be a settings object."
+  },
+  "text39": {
+    "message": "This is not an Arrow Button Mapper settings file."
+  },
+  "text40": {
+    "message": "No action pair array was found."
+  },
+  "text41": {
+    "message": "The enabled setting must be true or false."
+  },
+  "text42": {
+    "message": "Action pair $1 has an invalid format."
+  },
+  "text43": {
+    "message": "Action pair $1 has an invalid URL pattern."
+  },
+  "text44": {
+    "message": "Action pair $1 needs at least one CSS selector."
+  },
+  "text45": {
+    "message": "Action pair $1 has an invalid CSS selector."
+  },
+  "text46": {
+    "message": "The settings file is too large. Choose a JSON file no larger than 1 MB."
+  },
+  "text47": {
+    "message": "Replace your $1 action pairs with the $2 pairs in this file? Continue?"
+  },
+  "text48": {
+    "message": "Import canceled."
+  },
+  "text49": {
+    "message": "Imported $1 action pairs."
+  },
+  "text50": {
+    "message": "Could not read the settings file."
+  },
+  "text51": {
+    "message": "Import failed: $1"
+  },
+  "text52": {
+    "message": "Start the URL pattern with https://, http:// or *://."
+  },
+  "text53": {
+    "message": "Enter at least one CSS selector for ← or →."
+  },
+  "text54": {
+    "message": "The CSS selector is invalid."
+  },
+  "text55": {
+    "message": "Action pair updated."
+  },
+  "text56": {
+    "message": "Action pair saved."
+  },
+  "text57": {
+    "message": "Delete the action pair for \"$1\"?"
+  },
+  "text58": {
+    "message": "Action pair deleted."
+  },
+  "text59": {
+    "message": "Could not load settings."
+  },
+  "text60": {
+    "message": "Settings storage is full. Delete unused action pairs or export your settings and reduce their size."
+  },
+  "text61": {
+    "message": "Selected actions"
+  },
+  "text62": {
+    "message": "Saved for $1. You can edit this in the popup."
+  },
+  "text63": {
+    "message": "Click a link or button. Press Esc to cancel."
+  },
+  "text64": {
+    "message": "Could not identify the target element. Enter a selector manually."
+  },
+  "text65": {
+    "message": "① Click Back → ② Click Next"
+  },
+  "text66": {
+    "message": "① Done → ② Click Next"
+  },
+  "text67": {
+    "message": "Skip"
+  },
+  "text68": {
+    "message": "Save"
+  },
+  "text69": {
+    "message": "Start over"
+  },
+  "text70": {
+    "message": "Cancel"
+  },
+  "text71": {
+    "message": "Recording canceled."
+  },
+  "text72": {
+    "message": "Select at least one direction. You can start over or cancel."
+  },
+  "text73": {
+    "message": "Could not save. Review your selections and try again."
+  },
+  "text74": {
+    "message": "Invalid recording direction."
+  },
+  "text75": {
+    "message": "Recording $1. Click a link or button once. Press Esc to cancel."
+  },
+  "text76": {
+    "message": "Could not identify the right-clicked target. Right-click it again and retry."
+  },
+  "text77": {
+    "message": "Could not identify the right-clicked target."
+  },
+  "batchReview": {
+    "message": "Review: ← $1 / → $2"
+  }
+}

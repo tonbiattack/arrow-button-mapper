@@ -20,6 +20,7 @@ let message;
 let fail = false;
 const stored = { enabled: true, mappings: [{ id: "old", urlPattern: "https://example.com/path", leftSelector: "#old", rightSelector: "#keep" }] };
 const chrome = {
+  i18n: require("./test-i18n")(),
   runtime: { lastError: null, onMessage: { addListener(fn) { message = fn; } } },
   storage: { onChanged: { addListener() {} }, sync: {
     get(defaults, cb) { cb({ ...defaults, ...stored }); },
@@ -33,6 +34,9 @@ vm.runInNewContext(fs.readFileSync("content.js", "utf8"), { chrome, document, wi
 const send = data => { let result; message(data, {}, value => { result = value; }); return result; };
 const event = target => ({ target, composedPath: () => [target], preventDefault() { this.prevented = true; }, stopImmediatePropagation() { this.stopped = true; } });
 const button = label => {
+  const messages = require("./_locales/ja/messages.json");
+  const key = Object.keys(messages).find(key => messages[key].message === label);
+  label = chrome.i18n.getMessage(key);
   const overlay = [...root.children].reverse().find(node => node.shadow && !node.removed);
   const control = overlay.shadow.children[0].children.find(node => node.textContent === label);
   assert(control, `missing ${label}`);

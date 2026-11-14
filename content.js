@@ -1,6 +1,8 @@
 (() => {
   "use strict";
 
+  const t = (key, values) => chrome.i18n.getMessage(key, values);
+
   const DEFAULT_SETTINGS = Object.freeze({
     enabled: true,
     mappings: []
@@ -36,7 +38,7 @@
   function loadSettings() {
     chrome.storage.sync.get(DEFAULT_SETTINGS, (stored) => {
       if (chrome.runtime.lastError) {
-        console.warn("Arrow Button Mapper: 設定を読み込めませんでした。", chrome.runtime.lastError);
+        console.warn(`Arrow Button Mapper: ${t("text59")}`, chrome.runtime.lastError);
         return;
       }
 
@@ -141,7 +143,7 @@
     try {
       target = document.querySelector(selector);
     } catch {
-      console.warn("Arrow Button Mapper: CSS セレクタの書式が正しくありません。", selector);
+      console.warn(`Arrow Button Mapper: ${t("text54")}`, selector);
       return false;
     }
 
@@ -314,10 +316,10 @@
   function showStorageSaveError() {
     const detail = chrome.runtime.lastError?.message || "";
     if (/quota|bytes|maximum write/i.test(detail)) {
-      showNotice("設定の保存容量を超えました。不要な操作ペアを削除するか、設定をエクスポートして整理してください。");
+      showNotice(t("text60"));
       return;
     }
-    showNotice("設定を保存できませんでした。もう一度お試しください。");
+    showNotice(t("text26"));
   }
 
   // 同じ URL 条件は 1 件に統合し、今回選んだ左右どちらかの値だけを更新する。
@@ -346,8 +348,8 @@
           done?.(false);
           return;
         }
-        const keyLabel = typeof direction === "object" ? "選択した操作" : direction === "left" ? "←" : "→";
-        showNotice(`${keyLabel} に登録しました。必要に応じてポップアップから編集できます。`);
+        const keyLabel = typeof direction === "object" ? t("text61") : direction === "left" ? "←" : "→";
+        showNotice(t("text62", [String(keyLabel)]));
         done?.(true);
       });
     });
@@ -365,7 +367,7 @@
     if (!target) {
       if (recorder.direction !== "both") {
         recorder.overlay.remove();
-        recorder.overlay = createOverlay("リンクまたはボタンをクリックしてください。Esc で中止できます。");
+        recorder.overlay = createOverlay(t("text63"));
       }
       return;
     }
@@ -379,7 +381,7 @@
     const selector = buildSelector(target);
 
     if (!selector) {
-      showNotice("対象要素を特定できませんでした。手入力で設定してください。");
+      showNotice(t("text64"));
       return;
     }
     if (direction === "both") {
@@ -418,7 +420,7 @@
     const panel = document.createElement("div");
     panel.style.cssText = "max-width:360px;padding:14px;border-radius:10px;background:#10233f;color:white;font:14px/1.5 system-ui;box-shadow:0 10px 30px #0005";
     const text = document.createElement("p");
-    text.textContent = message || (recorder.step === "left" ? "① 戻るボタンをクリック → ② 進むボタンをクリック" : recorder.step === "right" ? "① 完了 → ② 進むボタンをクリック" : `確認: ← ${recorder.selections.leftSelector || "スキップ"} / → ${recorder.selections.rightSelector || "スキップ"}`);
+    text.textContent = message || (recorder.step === "left" ? t("text65") : recorder.step === "right" ? t("text66") : t("batchReview", [recorder.selections.leftSelector || t("text67"), recorder.selections.rightSelector || t("text67")]));
     panel.append(text);
     const addButton = (label, action) => {
       const button = document.createElement("button");
@@ -428,10 +430,10 @@
       button.addEventListener("click", action);
       panel.append(button);
     };
-    if (recorder.step !== "confirm") addButton("スキップ", advanceRecording);
-    if (recorder.step === "confirm") addButton("保存", saveBatch);
-    addButton("やり直し", () => { recorder.selections = {}; recorder.step = "left"; renderBatchGuide(); });
-    addButton("キャンセル", () => { stopRecording(); showNotice("操作の記憶を中止しました。"); });
+    if (recorder.step !== "confirm") addButton(t("text67"), advanceRecording);
+    if (recorder.step === "confirm") addButton(t("text68"), saveBatch);
+    addButton(t("text69"), () => { recorder.selections = {}; recorder.step = "left"; renderBatchGuide(); });
+    addButton(t("text70"), () => { stopRecording(); showNotice(t("text71")); });
     shadow.append(panel);
     document.documentElement.append(overlay);
     recorder.overlay = overlay;
@@ -446,7 +448,7 @@
 
   function saveBatch() {
     if (!Object.keys(recorder.selections).length) {
-      renderBatchGuide("少なくとも一方を選択してください。やり直し、またはキャンセルできます。");
+      renderBatchGuide(t("text72"));
       return;
     }
     const active = recorder;
@@ -455,7 +457,7 @@
       if (recorder !== active) return;
       active.saving = false;
       if (ok) stopRecording();
-      else renderBatchGuide("保存に失敗しました。選択内容を確認して再試行してください。");
+      else renderBatchGuide(t("text73"));
     }, active.urlPattern);
   }
 
@@ -464,12 +466,12 @@
     event.preventDefault();
     event.stopImmediatePropagation();
     stopRecording();
-    showNotice("操作の記憶を中止しました。");
+    showNotice(t("text71"));
   }
 
   function startRecording(direction) {
     if (direction !== "left" && direction !== "right" && direction !== "both") {
-      return { ok: false, message: "記憶するキーが正しくありません。" };
+      return { ok: false, message: t("text74") };
     }
 
     stopRecording();
@@ -477,7 +479,7 @@
     recorder = {
       direction,
       step: "left", selections: {}, urlPattern: currentUrlPattern(),
-      overlay: createOverlay(`${keyLabel} の操作を記憶中です。ページ上のリンクまたはボタンを 1 回クリックしてください。Esc で中止できます。`)
+      overlay: createOverlay(t("text75", [String(keyLabel)]))
     };
     if (direction === "both") {
       renderBatchGuide();
@@ -496,13 +498,13 @@
       const candidate = contextTarget;
       contextTarget = null;
       if (!candidate || Date.now() - candidate.time > 30000 || candidate.url !== window.location.href || !candidate.element.isConnected || !["left", "right"].includes(message.direction)) {
-        showNotice("右クリックした対象を特定できませんでした。もう一度お試しください。");
+        showNotice(t("text76"));
         sendResponse({ ok: false });
         return;
       }
       const selector = buildSelector(candidate.element);
       if (!selector || !isUniqueSelector(selector, candidate.element)) {
-        showNotice("右クリックした対象を特定できませんでした。");
+        showNotice(t("text77"));
         sendResponse({ ok: false });
         return;
       }

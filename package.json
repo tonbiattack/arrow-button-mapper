@@ -2,6 +2,6 @@
   "name": "arrow-button-mapper",
   "private": true,
   "scripts": {
-    "test": "node --check content.js && node --check background.js && node --check popup.js && node verify-content.js && node verify-recording.js && node verify-popup.js && node verify-new-recording.js && node verify-permissions.js"
+    "test": "node --check content.js && node --check background.js && node --check popup.js && node --check popup-localize.js && node verify-content.js && node verify-recording.js && node verify-popup.js && node verify-new-recording.js && node verify-permissions.js && node verify-i18n.js"
   }
 }

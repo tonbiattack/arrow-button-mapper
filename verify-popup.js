@@ -94,6 +94,7 @@ const storage = {
 
 // 現在タブへのメッセージ送信と設定の読書きを再現する Chrome API モック。
 const chromeMock = {
+  i18n: require("./test-i18n")(),
   runtime: { lastError: null },
   tabs: {
     query(_queryInfo, callback) {
@@ -178,7 +179,7 @@ async function verify() {
   elements["#recordLeftButton"].click();
   assert(recordingMessages.length === 1 && recordingMessages[0].tabId === 42, "録画開始メッセージが現在のタブへ送信されていません。");
   assert(recordingMessages[0].message.type === "startRecording" && recordingMessages[0].message.direction === "left", "左キー用の録画開始メッセージが不正です。");
-  assert(elements["#recordMessage"].textContent.includes("記憶中"), "録画開始状態が表示されていません。");
+  assert(elements["#recordMessage"].textContent === chromeMock.i18n.getMessage("text36", ["←"]), "録画開始状態が表示されていません。");
   assert(popupCloseCount === 1, "録画開始後にポップアップが閉じられていません。");
 
   const exported = JSON.parse(exportedBlob.text);
@@ -212,6 +213,7 @@ async function verify() {
   assert(storage.enabled === false, "インポート時の有効状態が保存されていません。");
   assert(storage.mappings.length === 1 && storage.mappings[0].id === "gallery", "インポート時に操作ペアが置き換わっていません。");
   assert(elements["#mappingCount"].textContent === "1", "インポート後の操作ペア表示が更新されていません。");
+  assert(elements["#transferMessage"].textContent === chromeMock.i18n.getMessage("text49", ["1"]), "インポート件数の翻訳が正しくありません。");
 
   // 保存に失敗しても、画面上の状態だけが先に更新されると、次の保存やエクスポートで未保存データを扱ってしまう。
   elements["#urlPattern"].value = "https://example.com/new";
