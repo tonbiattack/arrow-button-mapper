@@ -1,110 +1,164 @@
+<div align="center">
+
+<img src="icons/icon-128.png" alt="Arrow Button Mapper" width="128" height="128">
+
 # Arrow Button Mapper
 
-**Arrow Button Mapper** は、Web ページ上のリンクやボタンを `←` / `→` キーで操作できる Chrome 拡張機能です。電子書籍ビューア、画像ギャラリー、検索結果、社内ツールなどで、サイトごとに「前へ」「次へ」の操作をキーボードへ割り当てられます。
+**Web ページの「前へ」「次へ」を、`←` / `→` キーで。**
 
-矢印キーでページ移動できるサイトが増える一方、未対応のサイトでも同じ操作感を得られるように作りました。
+サイトごとにリンクやボタンを矢印キーへ割り当てる Chrome 拡張機能。CSS セレクタを書かずに、
+ページ上の要素をクリックするだけで登録できます。
 
-CSS セレクタを手入力する代わりに、ページ上の対象を一度クリックして操作を**記憶**させることもできます。ページ番号が変わるリンクでは、変化する番号ではなく URL の固定部分とページネーション内の位置を優先して記憶するため、次のページへ移動した後も操作を続けられます。
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Manifest V3](https://img.shields.io/badge/manifest-v3-brightgreen.svg)](manifest.json)
 
-実装を読むための入口として、[実装を読むためのガイド](docs/implementation-guide.md) も用意しています。
+[プライバシーポリシー](docs/chrome-web-store/privacy-policy.md) ·
+[ストア掲載情報](docs/chrome-web-store/listing.md) ·
+[Issues](https://github.com/tonbiattack/arrow-button-mapper/issues)
 
-## 主な機能
+</div>
 
-|機能|内容|
-|---|---|
-|クリックによる操作記憶|`←` または `→` を選び、ページ上のリンク・ボタンを 1 回クリックするだけで割り当てを保存します。|
-|まとめて登録・右クリック登録|左右を続けて登録するか、対象を右クリックして方向を選べます。|
-|ページ別の操作ペア|URL 条件ごとに、左右それぞれの対象要素を設定できます。|
-|親子 URL の優先順位|複数の条件に一致した場合、より具体的な URL 条件を自動で優先します。|
-|手入力による調整|URL パターンと CSS セレクタを直接編集・削除できます。|
-|設定の移行|設定を JSON 形式でエクスポート・インポートできます。|
-|安全なキー処理|入力欄や編集可能な領域では、通常の矢印キー操作を妨げません。|
+<img src="docs/chrome-web-store/assets/screenshots/1.png" alt="設定画面" width="640">
+
+## 特徴
+
+- **クリックだけで登録** — `←` か `→` を選び、ページ上の対象を 1 回クリックするだけ。CSS セレクタの知識は不要
+- **ページ番号が変わっても動く** — URL の固定部分とページネーション内の位置を記憶するので、次ページでも操作を続けられる
+- **まとめて登録** — 「戻る・進むをまとめて登録」で左右を続けて設定。右クリックメニューからも登録できる
+- **入力欄を邪魔しない** — テキスト入力中や編集可能な領域では、通常の矢印キー操作をそのまま通す
+- **設定の移行** — JSON でエクスポート・インポート。別プロファイルや別端末へ移せる
+- **外部送信なし** — ページ内容も閲覧履歴も送らない。設定はブラウザ内にだけ保存
 
 ## インストール
 
-現在は、Chrome のデベロッパーモードで展開済み拡張機能として読み込んで使用します。
+### Chrome Web Store から
 
-1. このリポジトリを ZIP でダウンロードして展開するか、`git clone` で取得します。
-2. Chrome で `chrome://extensions` を開き、右上の **デベロッパー モード** を有効にします。
-3. **パッケージ化されていない拡張機能を読み込む** を選び、このリポジトリのフォルダー（`manifest.json` が直接入っているフォルダー）を指定します。
-4. 必要に応じて、Chrome の拡張機能メニューから Arrow Button Mapper をツールバーへ固定します。
+Chrome Web Store で **Arrow Button Mapper** を検索してインストールしてください。ストア版は自動更新されます。
 
-Chrome での展開済み拡張機能の読み込み方法は、[Chrome Extensions: Hello World](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world) も参照してください。
+### ソースから読み込む（開発者向け）
 
-## 最短の使い方: 操作を記憶する
+<details>
+<summary>手順を開く</summary>
 
-1. 矢印キーで操作したいページを開きます。
-2. ツールバーの Arrow Button Mapper を開きます。
-3. **← の操作を記憶** または **→ の操作を記憶** を選びます。ページ側で録画開始が受理されると、ポップアップは自動で閉じます。
-4. ページ右下に案内が出たら、実際に押したいリンクまたはボタンを 1 回クリックします。
-5. 保存完了の案内が表示されたら、`←` または `→` を押して動作を確認します。
+1. このリポジトリを ZIP でダウンロードして展開するか、`git clone` で取得
+2. Chrome で `chrome://extensions` を開き、右上の **デベロッパー モード** を有効化
+3. **パッケージ化されていない拡張機能を読み込む** を選び、`manifest.json` があるフォルダを指定
+4. 必要ならツールバーへピン留め
 
-> 記憶中のクリックは、設定を保存するためだけに使用されます。リンク遷移やボタン本来の処理は実行されません。Esc を押すと保存せずに中止できます。
+</details>
 
-**戻る・進むをまとめて登録** では、戻る、進むの順にクリックします。片側がない場合はスキップし、確認画面で保存してください。やり直しや Esc による中止もできます。保存に失敗した場合は確認画面から再試行できます。
+## 使い方
 
-また、ページのリンクやボタンを右クリックし、**Arrow Button Mapper** のメニューから登録する方向を選ぶこともできます。右クリック登録はトップフレームの HTTP / HTTPS ページで利用できます。対象が特定できない場合は保存されません。
+### いちばん短い手順
 
-自動記憶では、現在の URL の **オリジン + パス** を URL 条件として保存します。例えば `https://reader.example.com/book/42?page=3` で記憶すると、`https://reader.example.com/book/42` が保存され、同じ本のページ番号が変わっても適用されます。
+1. 矢印キーで操作したいページを開く
+2. ツールバーのアイコンからポップアップを開く
+3. **← の操作を記憶** または **→ の操作を記憶** を選ぶ（ページ側で受理されるとポップアップは閉じる）
+4. 右下の案内に従い、押したいリンクやボタンを 1 回クリック
+5. 保存されたら `←` / `→` を押して確認
 
-## 手入力で設定する
+> 記憶中のクリックは設定保存だけに使われ、リンク遷移やボタンの処理は実行されません。`Esc` で中止できます。
 
-自動記憶した内容を調整したい場合や、ページ上でクリックできない要素を指定したい場合は、ポップアップの **新しい操作ペア** から次の値を入力します。
+**戻る・進むをまとめて登録** では、戻る → 進む の順にクリックします。片側が無い場合はスキップできます。
 
-|項目|説明|例|
-|---|---|---|
-|URL パターン|適用範囲となる URL の先頭部分です。配下 URL にも適用されます。|`https://reader.example.com/book/`|
-|← キー用 CSS セレクタ|左キーでクリックする要素です。|`button.previous`、`#prev`|
-|→ キー用 CSS セレクタ|右キーでクリックする要素です。|`button.next`、`#next`|
+### 自動で保存される URL 条件
 
-URL 条件は前方一致です。例えば `https://reader.example.com/book/` は、`https://reader.example.com/book/42?page=3` にも適用されます。複数の条件が一致する場合は、より具体的な条件を優先します。
+現在の URL の **オリジン + パス** を条件として保存します。
+
+```text
+https://reader.example.com/book/42?page=3  で記憶
+  → 保存される条件: https://reader.example.com/book/42
+  → ?page=4 に移動しても、そのまま操作できる
+```
+
+### 手入力で調整する
+
+ポップアップの **新しい操作ペア** から、URL パターンと CSS セレクタを直接入力できます。
+
+| 項目 | 説明 | 例 |
+| --- | --- | --- |
+| URL パターン | 適用範囲の先頭部分。前方一致で配下 URL にも適用 | `https://reader.example.com/book/` |
+| ← キー用セレクタ | 左キーでクリックする要素 | `button.previous`、`#prev` |
+| → キー用セレクタ | 右キーでクリックする要素 | `button.next`、`#next` |
+
+複数の条件が一致する場合は、より具体的な URL 条件が優先されます。
 
 ```text
 汎用設定: https://reader.example.com/
-個別設定: https://reader.example.com/book/
+個別設定: https://reader.example.com/book/   ← /book/ 配下ではこちらが使われる
 ```
 
-上記の両方を登録した場合、`/book/` 配下では個別設定が使われます。URL の途中で任意の文字列を許可したい場合だけ、`*` を使用してください。
+途中で任意の文字列を許可したい場合だけ `*` を使います。
 
-## 設定のインポート・エクスポート
+### 設定の移行
 
-ポップアップの **設定の移行** セクションから、拡張機能の有効・無効状態と操作ペアを JSON ファイルに保存できます。別の Chrome プロファイルや端末へ設定を移す場合は、先にエクスポートした JSON ファイルを **設定をインポート** から選択してください。
+ポップアップの **設定の移行** から JSON をエクスポート・インポートできます。
+インポートは現在の設定を置き換えるため、先にバックアップを取ってください。
+不正な JSON・URL パターン・CSS セレクタは保存前に拒否します。
 
-インポートでは、現在の操作ペア全体がファイルの内容に置き換わります。先に現在の設定をエクスポートしてバックアップすることをおすすめします。不正な JSON、URL パターン、CSS セレクタを含むファイルは保存前に拒否します。
+## 権限
 
-## 権限とプライバシー
+| 権限 | 用途 |
+| --- | --- |
+| `storage` | 操作ペア・有効状態・インポート設定の保存 |
+| `contextMenus` | 右クリックメニューからの登録 |
+| ページアクセス（`http` / `https`） | 登録済み操作の実行と、ユーザーが開始した記憶操作のみ |
 
-|項目|用途|
-|---|---|
-|`storage` 権限|操作ペア、有効状態、インポート済み設定を保存するために使用します。|
-|`contextMenus` 権限|右クリックメニューから対象を登録するために使用します。|
-|ページアクセス|`http` / `https` のページで、登録済み操作の実行と、ユーザーが開始した操作記憶にのみ使用します。|
+ページ内容や閲覧履歴を外部へ送信しません。設定をエクスポートした場合のみ、
+ユーザーが選んだ場所に JSON が保存されます。詳細は
+[プライバシーポリシー](docs/chrome-web-store/privacy-policy.md)。
 
-拡張機能は、ページ内容や閲覧履歴を外部サービスへ送信しません。設定のエクスポートを行った場合は、ユーザーが選択した場所に JSON ファイルが保存されます。
+## 開発
 
-Chrome Web Store 向けの詳細な[プライバシーポリシー](docs/chrome-web-store/privacy-policy.md)も公開しています。
-
-## 開発・検証
-
-追加のパッケージインストールは不要です。Node.js が利用できる環境で、リポジトリ直下から次のコマンドを実行できます。
+追加のパッケージインストールは不要です。Node.js があれば動きます。
 
 ```bash
-npm test
+npm test   # 構文チェック + 主要動作の検証
 ```
 
-個別に実行する場合は、`node --check content.js`、`node --check popup.js`、`node verify-content.js`、`node verify-recording.js`、`node verify-popup.js` を利用できます。
+個別に実行する場合:
 
-|ファイル|役割|
-|---|---|
-|`manifest.json`|Manifest V3 の設定と拡張機能アイコンの定義です。|
-|`content.js`|URL 照合、キー操作、クリック記憶、セレクタ生成を実装します。|
-|`popup.html` / `popup.css` / `popup.js`|設定、録画開始、JSON 移行を提供するポップアップです。|
-|`verify-*.js`|主要なキー操作、クリック記憶、設定移行を確認するローカル検証です。|
+```bash
+node --check content.js
+node --check popup.js
+node verify-content.js      # URL 前方一致・優先順位・左右クリック
+node verify-recording.js    # クリック記憶・URL 条件生成
+node verify-popup.js        # 録画開始・JSON 移行
+node verify-new-recording.js
+node verify-permissions.js  # manifest の権限とページアクセス範囲
+```
 
-## フィードバック
+| ファイル | 役割 |
+| --- | --- |
+| `manifest.json` | Manifest V3 の定義とアイコン |
+| `content.js` | URL 照合・キー操作・クリック記憶・セレクタ生成 |
+| `popup.html` / `popup.css` / `popup.js` | 設定・録画開始・JSON 移行の UI |
+| `background.js` | 右クリックメニューとメッセージ中継 |
+| `verify-*.js` | 主要動作のローカル検証 |
 
-不具合報告や改善提案は、[サポート情報](docs/chrome-web-store/support.md)に記載の連絡先へお知らせください。問題が発生したページでは、可能であれば URL（公開してよいものに限ります）、対象ボタンの HTML、期待する左右キーの動作を添えてください。
+実装の読み方は [実装ガイド](docs/implementation-guide.md) にまとめています。
 
-## 参考資料
+## ドキュメント
 
-- [Chrome Extensions: Hello World — Chrome for Developers](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world)
+| ドキュメント | 内容 |
+| --- | --- |
+| [実装ガイド](docs/implementation-guide.md) | コードの読み方と主要な処理の流れ |
+| [プライバシーポリシー](docs/chrome-web-store/privacy-policy.md) | 収集しない情報と権限の用途 |
+| [ストア掲載情報](docs/chrome-web-store/listing.md) | 説明文・スクリーンショット・申請項目 |
+| [サポート](docs/chrome-web-store/support.md) | 問い合わせ先 |
+| [スクリーンショット手順](docs/chrome-web-store/screenshots.md) | 撮影と差し替え |
+
+## コントリビューション
+
+不具合報告・改善提案は [Issues](https://github.com/tonbiattack/arrow-button-mapper/issues) へ。
+問題が出たページでは、可能な範囲で次を添えてください。
+
+- 公開してよい URL
+- 対象ボタンの HTML
+- 期待する `←` / `→` の動作
+
+PR を送る場合は `npm test` が通ることを確認してください。
+
+## ライセンス
+
+[MIT License](LICENSE)
