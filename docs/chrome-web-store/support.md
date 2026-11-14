@@ -1,5 +1,7 @@
 # Arrow Button Mapper サポート
 
+[English](support.en.md)
+
 Arrow Button Mapper に関するお問い合わせ、不具合の報告、プライバシーに関するご質問は、次のメールアドレスへお寄せください。
 
 teni213638395636@gmail.com

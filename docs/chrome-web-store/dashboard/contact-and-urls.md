@@ -14,9 +14,15 @@
 
 `https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/support.md`
 
+上記のページから英語版へ移動できます。英語版の直接 URL:
+`https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/support.en.md`
+
 ## Privacy policy URL
 
 `https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/privacy-policy.md`
+
+上記のページから英語版へ移動できます。英語版の直接 URL:
+`https://github.com/tonbiattack/arrow-button-mapper/blob/main/docs/chrome-web-store/privacy-policy.en.md`
 
 ## Official URL
 

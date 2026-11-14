@@ -1,5 +1,7 @@
 # Arrow Button Mapper プライバシーポリシー
 
+[English](privacy-policy.en.md)
+
 最終更新日: 2026-11-14
 
 Arrow Button Mapper（以下「本拡張機能」）は、ユーザーが指定した Web ページ上のリンクまたはボタンを、キーボードの ← / → キーで操作できるようにする Chrome 拡張機能です。

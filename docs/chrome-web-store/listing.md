@@ -23,3 +23,5 @@ Chrome Web Store Developer Dashboard の入力欄ごとに、貼り付ける文�
 スクリーンショットの内容とアップロード手順は [screenshots.md](screenshots.md) を参照する。ページ URL、CSS セレクタ、同期ストレージの利用はプライバシーポリシーにも記載している。
 
 英語版の掲載文は `dashboard/en/item-summary.txt` と `dashboard/en/detailed-description.md` にあります。次回の英語対応リリースについては [release-2.6.0.md](release-2.6.0.md) を参照してください。
+
+プライバシーポリシーとサポートには英語版があります。既存の公開 URL から英語版へ移動できます。審査用の単一用途・権限説明の英訳は [dashboard/en/reviewer-information.md](dashboard/en/reviewer-information.md) を必要に応じて参照してください。
