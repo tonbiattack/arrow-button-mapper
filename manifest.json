@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Arrow Button Mapper",
+  "default_locale": "en",
   "version": "2.5.0",
-  "description": "URL ごとに登録した CSS セレクタの要素を左右矢印キーでクリックします。",
+  "description": "__MSG_extensionDescription__",
   "permissions": ["storage", "tabs", "contextMenus"],
   "background": { "service_worker": "background.js" },
   "action": {

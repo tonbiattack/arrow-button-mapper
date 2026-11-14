@@ -2,8 +2,8 @@
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({ id: "arrow-mapper", title: "Arrow Button Mapper", contexts: ["all"], documentUrlPatterns: ["http://*/*", "https://*/*"] });
-  chrome.contextMenus.create({ id: "arrow-left", parentId: "arrow-mapper", title: "戻る（←）に登録", contexts: ["all"] });
-  chrome.contextMenus.create({ id: "arrow-right", parentId: "arrow-mapper", title: "進む（→）に登録", contexts: ["all"] });
+  chrome.contextMenus.create({ id: "arrow-left", parentId: "arrow-mapper", title: chrome.i18n.getMessage("contextLeft"), contexts: ["all"] });
+  chrome.contextMenus.create({ id: "arrow-right", parentId: "arrow-mapper", title: chrome.i18n.getMessage("contextRight"), contexts: ["all"] });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {

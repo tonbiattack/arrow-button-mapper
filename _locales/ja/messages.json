@@ -1,0 +1,5 @@
+{
+  "extensionDescription": { "message": "URL ごとに登録した CSS セレクタの要素を左右矢印キーでクリックします。" },
+  "contextLeft": { "message": "戻る（←）に登録" },
+  "contextRight": { "message": "進む（→）に登録" }
+}

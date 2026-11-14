@@ -1,0 +1,5 @@
+{
+  "extensionDescription": { "message": "Click elements with the left and right arrow keys using site-specific CSS selectors." },
+  "contextLeft": { "message": "Assign to Back (←)" },
+  "contextRight": { "message": "Assign to Next (→)" }
+}
