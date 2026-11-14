@@ -57,6 +57,7 @@ const stored = { enabled: true, mappings: [] };
 
 // 設定の読書きとポップアップからの録画開始要求だけを再現する Chrome API モック。
 const chromeMock = {
+  i18n: require("./test-i18n")(),
   runtime: {
     lastError: null,
     onMessage: {

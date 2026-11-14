@@ -1,6 +1,8 @@
 (() => {
   "use strict";
 
+  const t = (key, values) => chrome.i18n.getMessage(key, values);
+
   const DEFAULT_SETTINGS = {
     enabled: true,
     mappings: []
@@ -89,13 +91,13 @@
   function saveSettings(partialSettings, onSaved, onError) {
     chrome.storage.sync.set(partialSettings, () => {
       if (chrome.runtime.lastError) {
-        const message = "設定を保存できませんでした。もう一度お試しください。";
+        const message = t("text26");
         if (onError) {
           onError(message);
         } else {
           setMessage(message, "error");
         }
-        console.error("Arrow Button Mapper: 設定を保存できませんでした。", chrome.runtime.lastError);
+        console.error(`Arrow Button Mapper: ${t("text26")}`, chrome.runtime.lastError);
         return;
       }
       onSaved?.();
@@ -115,8 +117,8 @@
   function resetForm() {
     mappingForm.reset();
     editingId.value = "";
-    formTitle.textContent = "新しい操作ペア";
-    saveButton.textContent = "操作ペアを保存";
+    formTitle.textContent = t("text13");
+    saveButton.textContent = t("text19");
     cancelButton.hidden = true;
   }
 
@@ -128,8 +130,8 @@
     urlPattern.value = mapping.urlPattern;
     leftSelector.value = mapping.leftSelector;
     rightSelector.value = mapping.rightSelector;
-    formTitle.textContent = "操作ペアを編集";
-    saveButton.textContent = "変更を保存";
+    formTitle.textContent = t("text27");
+    saveButton.textContent = t("text28");
     cancelButton.hidden = false;
     setMessage("");
     urlPattern.focus();
@@ -142,7 +144,7 @@
     const strong = document.createElement("strong");
     strong.textContent = `${label}: `;
     const code = document.createElement("code");
-    code.textContent = selector || "未設定";
+    code.textContent = selector || t("text29");
 
     item.append(strong, code);
     return item;
@@ -155,7 +157,7 @@
     if (state.mappings.length === 0) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "登録済みの操作ペアはありません。";
+      empty.textContent = t("text30");
       mappingList.append(empty);
       return;
     }
@@ -177,14 +179,14 @@
       editButton.type = "button";
       editButton.dataset.action = "edit";
       editButton.dataset.id = mapping.id;
-      editButton.textContent = "編集";
+      editButton.textContent = t("text31");
 
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
       deleteButton.className = "danger";
       deleteButton.dataset.action = "delete";
       deleteButton.dataset.id = mapping.id;
-      deleteButton.textContent = "削除";
+      deleteButton.textContent = t("text32");
 
       controls.append(editButton, deleteButton);
       card.append(pattern, renderSelector("←", mapping.leftSelector), renderSelector("→", mapping.rightSelector), controls);
@@ -198,22 +200,22 @@
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs?.[0];
       if (chrome.runtime.lastError || !tab?.id) {
-        setRecordMessage("現在のページを取得できませんでした。", "error");
+        setRecordMessage(t("text33"), "error");
         return;
       }
 
       chrome.tabs.sendMessage(tab.id, { type: "startRecording", direction }, (response) => {
         if (chrome.runtime.lastError) {
-          setRecordMessage("このページでは記憶を開始できません。対象ページを再読み込みしてからお試しください。", "error");
+          setRecordMessage(t("text34"), "error");
           return;
         }
         if (!response?.ok) {
-          setRecordMessage(response?.message || "記憶を開始できませんでした。", "error");
+          setRecordMessage(response?.message || t("text35"), "error");
           return;
         }
 
-        const keyLabel = direction === "left" ? "←" : "→";
-        setRecordMessage(`${keyLabel} の操作を記憶中です。ページ上の対象を 1 回クリックしてください。`, "success");
+        const keyLabel = direction === "both" ? "← / →" : direction === "left" ? "←" : "→";
+        setRecordMessage(t("text36", [String(keyLabel)]), "success");
         // ページ側が監視を開始できたことを確認してから閉じる。失敗時はポップアップを残して理由を表示する。
         window.close();
       });
@@ -251,7 +253,7 @@
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
-    setTransferMessage("設定ファイルをエクスポートしました。", "success");
+    setTransferMessage(t("text37"), "success");
   }
 
   // 同じ ID を含むファイルでも、編集・削除が衝突しないよう読み込み時に重複を解消する。
@@ -267,24 +269,24 @@
   // 保存前に JSON の形式・URL・CSS セレクタをすべて検証し、不正な設定で既存データを壊さない。
   function parseImportedSettings(payload) {
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      throw new Error("JSON の最上位は設定オブジェクトである必要があります。");
+      throw new Error(t("text38"));
     }
     if (payload.format && payload.format !== EXPORT_FORMAT) {
-      throw new Error("このファイルは Arrow Button Mapper の設定ファイルではありません。");
+      throw new Error(t("text39"));
     }
 
     const source = payload.settings && typeof payload.settings === "object" ? payload.settings : payload;
     if (!Array.isArray(source.mappings)) {
-      throw new Error("操作ペアの配列が見つかりません。");
+      throw new Error(t("text40"));
     }
     if ("enabled" in source && typeof source.enabled !== "boolean") {
-      throw new Error("有効・無効の設定値が正しくありません。");
+      throw new Error(t("text41"));
     }
 
     const usedIds = new Set();
     const mappings = source.mappings.map((mapping, index) => {
       if (!mapping || typeof mapping !== "object" || Array.isArray(mapping)) {
-        throw new Error(`${index + 1} 件目の操作ペアの形式が正しくありません。`);
+        throw new Error(t("text42", [String(index + 1)]));
       }
 
       const pattern = typeof mapping.urlPattern === "string" ? mapping.urlPattern.trim() : "";
@@ -292,13 +294,13 @@
       const right = typeof mapping.rightSelector === "string" ? mapping.rightSelector.trim() : "";
 
       if (!isValidUrlPattern(pattern)) {
-        throw new Error(`${index + 1} 件目の URL パターンが正しくありません。`);
+        throw new Error(t("text43", [String(index + 1)]));
       }
       if (!left && !right) {
-        throw new Error(`${index + 1} 件目には左右いずれかの CSS セレクタが必要です。`);
+        throw new Error(t("text44", [String(index + 1)]));
       }
       if (!isValidSelector(left) || !isValidSelector(right)) {
-        throw new Error(`${index + 1} 件目の CSS セレクタの書式が正しくありません。`);
+        throw new Error(t("text45", [String(index + 1)]));
       }
 
       return {
@@ -321,13 +323,13 @@
 
     try {
       if (file.size > MAX_IMPORT_BYTES) {
-        throw new Error("設定ファイルが大きすぎます。1 MB 以下の JSON ファイルを選択してください。");
+        throw new Error(t("text46"));
       }
 
       const text = await file.text();
       const imported = parseImportedSettings(JSON.parse(text));
-      if (!window.confirm(`現在の ${state.mappings.length} 件の操作ペアを、ファイル内の ${imported.mappings.length} 件で置き換えます。続行しますか？`)) {
-        setTransferMessage("インポートを取り消しました。");
+      if (!window.confirm(t("text47", [String(state.mappings.length), String(imported.mappings.length)]))) {
+        setTransferMessage(t("text48"));
         return;
       }
 
@@ -338,11 +340,11 @@
         renderMappingList();
         resetForm();
         setMessage("");
-        setTransferMessage(`${imported.mappings.length} 件の操作ペアをインポートしました。`, "success");
+        setTransferMessage(t("text49", [String(imported.mappings.length)]), "success");
       }, (message) => setTransferMessage(message, "error"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "設定ファイルを読み込めませんでした。";
-      setTransferMessage(`インポートできませんでした: ${message}`, "error");
+      const message = error instanceof Error ? error.message : t("text50");
+      setTransferMessage(t("text51", [String(message)]), "error");
     } finally {
       importInput.value = "";
     }
@@ -354,7 +356,7 @@
       state.enabled = nextEnabled;
     }, () => {
       enabled.checked = state.enabled;
-      setMessage("設定を保存できませんでした。もう一度お試しください。", "error");
+      setMessage(t("text26"), "error");
     });
   });
 
@@ -365,19 +367,19 @@
     const right = rightSelector.value.trim();
 
     if (!isValidUrlPattern(pattern)) {
-      setMessage("URL パターンは https://、http://、または *:// で始めてください。", "error");
+      setMessage(t("text52"), "error");
       urlPattern.focus();
       return;
     }
 
     if (!left && !right) {
-      setMessage("← または → の CSS セレクタを少なくとも 1 つ入力してください。", "error");
+      setMessage(t("text53"), "error");
       leftSelector.focus();
       return;
     }
 
     if (!isValidSelector(left) || !isValidSelector(right)) {
-      setMessage("CSS セレクタの書式が正しくありません。", "error");
+      setMessage(t("text54"), "error");
       return;
     }
 
@@ -388,9 +390,9 @@
     const mappings = [...state.mappings];
     if (index >= 0) {
       mappings[index] = nextMapping;
-      saveMappings(mappings, "操作ペアを更新しました。");
+      saveMappings(mappings, t("text55"));
     } else {
-      saveMappings([...mappings, nextMapping], "操作ペアを保存しました。");
+      saveMappings([...mappings, nextMapping], t("text56"));
     }
   });
 
@@ -411,9 +413,9 @@
 
     if (action === "delete") {
       const mapping = state.mappings.find((item) => item.id === id);
-      if (!mapping || !window.confirm(`「${mapping.urlPattern}」の操作ペアを削除しますか？`)) return;
+      if (!mapping || !window.confirm(t("text57", [String(mapping.urlPattern)]))) return;
 
-      saveMappings(state.mappings.filter((item) => item.id !== id), "操作ペアを削除しました。");
+      saveMappings(state.mappings.filter((item) => item.id !== id), t("text58"));
     }
   });
 
@@ -425,8 +427,8 @@
 
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
     if (chrome.runtime.lastError) {
-      setMessage("設定を読み込めませんでした。", "error");
-      console.error("Arrow Button Mapper: 設定を読み込めませんでした。", chrome.runtime.lastError);
+      setMessage(t("text59"), "error");
+      console.error(`Arrow Button Mapper: ${t("text59")}`, chrome.runtime.lastError);
       return;
     }
 

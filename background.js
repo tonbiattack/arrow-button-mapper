@@ -1,10 +1,20 @@
 "use strict";
 
-chrome.runtime.onInstalled.addListener(() => {
+function createMenus() {
   chrome.contextMenus.create({ id: "arrow-mapper", title: "Arrow Button Mapper", contexts: ["all"], documentUrlPatterns: ["http://*/*", "https://*/*"] });
   chrome.contextMenus.create({ id: "arrow-left", parentId: "arrow-mapper", title: chrome.i18n.getMessage("contextLeft"), contexts: ["all"] });
   chrome.contextMenus.create({ id: "arrow-right", parentId: "arrow-mapper", title: chrome.i18n.getMessage("contextRight"), contexts: ["all"] });
-});
+}
+
+// Menus persist across restarts. Refresh their language when Chrome starts.
+function refreshMenus() {
+  chrome.contextMenus.removeAll(() => {
+    if (!chrome.runtime.lastError) createMenus();
+  });
+}
+
+chrome.runtime.onInstalled.addListener(refreshMenus);
+chrome.runtime.onStartup.addListener(refreshMenus);
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   const direction = info.menuItemId === "arrow-left" ? "left" : info.menuItemId === "arrow-right" ? "right" : null;

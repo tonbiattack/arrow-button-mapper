@@ -21,3 +21,5 @@ Chrome Web Store Developer Dashboard の入力欄ごとに、貼り付ける文�
 | Category / language / image assets | [listing-settings.md](dashboard/listing-settings.md) | 生産性、日本語、画像ファイル |
 
 スクリーンショットの内容とアップロード手順は [screenshots.md](screenshots.md) を参照する。ページ URL、CSS セレクタ、同期ストレージの利用はプライバシーポリシーにも記載している。
+
+英語版の掲載文は `dashboard/en/item-summary.txt` と `dashboard/en/detailed-description.md` にあります。次回の英語対応リリースについては [release-2.6.0.md](release-2.6.0.md) を参照してください。

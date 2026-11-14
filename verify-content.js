@@ -44,6 +44,7 @@ let storageChangeListener;
 
 // 初期設定と storage.onChanged による設定更新だけを再現する Chrome API モック。
 const chromeMock = {
+  i18n: require("./test-i18n")(),
   runtime: {
     lastError: null,
     onMessage: { addListener() {} }
