@@ -1,5 +1,11 @@
 # Support / URLs
 
+## Store listing URL
+
+`https://chromewebstore.google.com/detail/ejnlggdofblmjagoeijifpjggmgjcibj`
+
+拡張機能 ID: `ejnlggdofblmjagoeijifpjggmgjcibj`
+
 ## Support email
 
 `teni213638395636@gmail.com`
