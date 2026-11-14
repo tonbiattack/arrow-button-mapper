@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "Arrow Button Mapper",
   "default_locale": "en",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "__MSG_extensionDescription__",
-  "permissions": ["storage", "tabs", "contextMenus"],
+  "permissions": ["storage", "contextMenus"],
   "background": { "service_worker": "background.js" },
   "action": {
     "default_popup": "popup.html",
