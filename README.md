@@ -9,9 +9,11 @@
 サイトごとにリンクやボタンを矢印キーへ割り当てる Chrome 拡張機能。CSS セレクタを書かずに、
 ページ上の要素をクリックするだけで登録できます。
 
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-v2.5.1-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/ejnlggdofblmjagoeijifpjggmgjcibj)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/manifest-v3-brightgreen.svg)](manifest.json)
 
+[ストアでインストール](https://chromewebstore.google.com/detail/ejnlggdofblmjagoeijifpjggmgjcibj) ·
 [プライバシーポリシー](docs/chrome-web-store/privacy-policy.md) ·
 [ストア掲載情報](docs/chrome-web-store/listing.md) ·
 [Issues](https://github.com/tonbiattack/arrow-button-mapper/issues)
@@ -33,7 +35,7 @@
 
 ### Chrome Web Store から
 
-Chrome Web Store で **Arrow Button Mapper** を検索してインストールしてください。ストア版は自動更新されます。
+[Chrome Web Store](https://chromewebstore.google.com/detail/ejnlggdofblmjagoeijifpjggmgjcibj) からインストールします。ストア版は自動更新されます。
 
 ### ソースから読み込む（開発者向け）
 
